@@ -13,12 +13,14 @@ toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleBtn.BorderSizePixel = 0
 
 -- الإطار الرئيسي
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 270, 0, 310)
+local frame = Instance.new("ScrollingFrame", gui)
+frame.Size = UDim2.new(0, 270, 0, 260)
 frame.Position = UDim2.new(0, 10, 0, 50)
 frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 frame.BorderSizePixel = 0
 frame.Visible = true
+frame.CanvasSize = UDim2.new(0, 0, 0, 400)
+frame.ScrollBarThickness = 6
 
 -- الأزرار
 local function createButton(text, yPosition, color)
@@ -43,7 +45,7 @@ local rajdiBtn = createButton("💀 راجدي جماعي", 230, Color3.fromRGB(
 -- الحقوق
 local credit = Instance.new("TextLabel", frame)
 credit.Size = UDim2.new(1, 0, 0, 20)
-credit.Position = UDim2.new(0, 0, 1, -20)
+credit.Position = UDim2.new(0, 0, 0, 280)
 credit.Text = "حقوق: iraq north dobk"
 credit.BackgroundTransparency = 1
 credit.TextColor3 = Color3.fromRGB(255, 255, 255)
