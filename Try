@@ -1,31 +1,60 @@
-local lp = game.Players.LocalPlayer
+-- إعدادات اللاعب
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
 local char = lp.Character or lp.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 
--- ✈️ يطيرك بعيد أول ما يبدأ
-hrp.CFrame = hrp.CFrame * CFrame.new(0, 0, -999) -- طيران بعيد
+-- إنشاء واجهة GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CuffGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = lp:WaitForChild("PlayerGui")
 
-wait(1) -- ننتظر شوي قبل نبدأ الكلبشة
+-- إنشاء زر التفعيل
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 150, 0, 50)
+toggleButton.Position = UDim2.new(0, 20, 0, 20)
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Font = Enum.Font.SourceSansBold
+toggleButton.TextSize = 24
+toggleButton.Text = "تشغيل الكلبشة"
+toggleButton.Parent = screenGui
 
--- سبام ClickDetectors لكل جسم لاعب
-local function spamClickDetectors(target)
-    for i = 1, 5 do
-        for _, part in pairs(target:GetDescendants()) do
-            if part:IsA("ClickDetector") then
-                fireclickdetector(part)
+-- متغير لتتبع حالة التفعيل
+local isActive = false
+
+-- وظيفة التنقل خلف اللاعبين
+local function loopCuffThrow()
+    while isActive do
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= lp and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local targetHRP = player.Character.HumanoidRootPart
+
+                -- 1. الانتقال خلف اللاعب
+                local backOffset = targetHRP.CFrame.LookVector * -2
+                local backPosition = targetHRP.Position + backOffset
+                hrp.CFrame = CFrame.new(backPosition, targetHRP.Position)
+
+                wait(1.5) -- وقت للضغط اليدوي
+
+                -- 2. الانتقال إلى موقع مرتفع في الهواء
+                local airPosition = Vector3.new(0, 500, 0)
+                hrp.CFrame = CFrame.new(airPosition)
+
+                wait(1.2) -- وقت للضغط اليدوي في الهواء
             end
         end
-        wait(0.1)
     end
 end
 
--- الكلبشة الجماعية المستمرة
-while true do
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= lp and player.Character then
-            spamClickDetectors(player.Character)
-            wait(0.3)
-        end
+-- حدث الضغط على الزر
+toggleButton.MouseButton1Click:Connect(function()
+    isActive = not isActive
+    if isActive then
+        toggleButton.Text = "إيقاف الكلبشة"
+        spawn(loopCuffThrow)
+    else
+        toggleButton.Text = "تشغيل الكلبشة"
     end
-    wait(2.5) -- كل 2.5 ثانية يعيد اللفة
-end
+end)
