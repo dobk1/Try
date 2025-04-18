@@ -1,29 +1,13 @@
-local Players = game:GetService("Players")
-local lp = Players.LocalPlayer
+local lp = game.Players.LocalPlayer
 local char = lp.Character or lp.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 
--- إنشاء واجهة GUI
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "CuffGUI"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = lp:WaitForChild("PlayerGui")
+-- ✈️ يطيرك بعيد أول ما يبدأ
+hrp.CFrame = hrp.CFrame * CFrame.new(0, 0, -999) -- طيران بعيد
 
--- إنشاء زر التفعيل
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 150, 0, 50)
-toggleButton.Position = UDim2.new(0, 20, 0, 20)
-toggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.Font = Enum.Font.SourceSansBold
-toggleButton.TextSize = 24
-toggleButton.Text = "تشغيل الكلبشة"
-toggleButton.Parent = screenGui
+wait(1) -- ننتظر شوي قبل نبدأ الكلبشة
 
--- متغير لتتبع حالة التفعيل
-local isActive = false
-
--- وظيفة الضغط على ClickDetectors
+-- سبام ClickDetectors لكل جسم لاعب
 local function spamClickDetectors(target)
     for i = 1, 5 do
         for _, part in pairs(target:GetDescendants()) do
@@ -35,31 +19,13 @@ local function spamClickDetectors(target)
     end
 end
 
--- وظيفة الكلبشة والرمي
-local function loopCuffThrow()
-    while isActive do
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= lp and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                local targetHRP = player.Character.HumanoidRootPart
-                hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -2)
-                wait(0.3)
-                spamClickDetectors(player.Character)
-                wait(0.2)
-                targetHRP.Velocity = Vector3.new(0, 200, math.random(-50, 50))
-                wait(0.5)
-            end
+-- الكلبشة الجماعية المستمرة
+while true do
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player ~= lp and player.Character then
+            spamClickDetectors(player.Character)
+            wait(0.3)
         end
-        wait(4)
     end
+    wait(2.5) -- كل 2.5 ثانية يعيد اللفة
 end
-
--- حدث الضغط على الزر
-toggleButton.MouseButton1Click:Connect(function()
-    isActive = not isActive
-    if isActive then
-        toggleButton.Text = "إيقاف الكلبشة"
-        spawn(loopCuffThrow)
-    else
-        toggleButton.Text = "تشغيل الكلبشة"
-    end
-end)
