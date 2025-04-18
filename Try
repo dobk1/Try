@@ -1,60 +1,104 @@
--- إعدادات اللاعب
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 local char = lp.Character or lp.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 
--- إنشاء واجهة GUI
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "CuffGUI"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = lp:WaitForChild("PlayerGui")
+-- واجهة GUI
+local gui = Instance.new("ScreenGui", lp:WaitForChild("PlayerGui"))
+gui.Name = "IraqNorthUI"
 
--- إنشاء زر التفعيل
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 150, 0, 50)
-toggleButton.Position = UDim2.new(0, 20, 0, 20)
-toggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.Font = Enum.Font.SourceSansBold
-toggleButton.TextSize = 24
-toggleButton.Text = "تشغيل الكلبشة"
-toggleButton.Parent = screenGui
+-- زر فتح/إغلاق القائمة
+local toggle = Instance.new("TextButton", gui)
+toggle.Size = UDim2.new(0, 40, 0, 40)
+toggle.Position = UDim2.new(0, 10, 0, 10)
+toggle.Text = "☰"
+toggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggle.Font = Enum.Font.SourceSansBold
+toggle.TextSize = 24
+toggle.ZIndex = 2
 
--- متغير لتتبع حالة التفعيل
-local isActive = false
+-- الإطار الرئيسي
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0, 220, 0, 180)
+main.Position = UDim2.new(0, 10, 0, 60)
+main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+main.Visible = false
 
--- وظيفة التنقل خلف اللاعبين
-local function loopCuffThrow()
-    while isActive do
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= lp and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                local targetHRP = player.Character.HumanoidRootPart
+-- حقوق
+local rights = Instance.new("TextLabel", main)
+rights.Size = UDim2.new(1, 0, 0, 20)
+rights.Position = UDim2.new(0, 0, 1, -20)
+rights.Text = "حقوق: iraq north dobk"
+rights.BackgroundTransparency = 1
+rights.TextColor3 = Color3.fromRGB(180, 180, 180)
+rights.Font = Enum.Font.SourceSans
+rights.TextSize = 14
 
-                -- 1. الانتقال خلف اللاعب
-                local backOffset = targetHRP.CFrame.LookVector * -2
-                local backPosition = targetHRP.Position + backOffset
-                hrp.CFrame = CFrame.new(backPosition, targetHRP.Position)
+-- زر الكلبشة
+local cuffBtn = Instance.new("TextButton", main)
+cuffBtn.Size = UDim2.new(1, -20, 0, 40)
+cuffBtn.Position = UDim2.new(0, 10, 0, 10)
+cuffBtn.Text = "تشغيل الكلبشة الذكية"
+cuffBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+cuffBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+cuffBtn.Font = Enum.Font.SourceSansBold
+cuffBtn.TextSize = 18
 
-                wait(1.5) -- وقت للضغط اليدوي
+-- زر السكن
+local skinBtn = Instance.new("TextButton", main)
+skinBtn.Size = UDim2.new(1, -20, 0, 40)
+skinBtn.Position = UDim2.new(0, 10, 0, 60)
+skinBtn.Text = "سكن"
+skinBtn.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
+skinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+skinBtn.Font = Enum.Font.SourceSansBold
+skinBtn.TextSize = 18
 
-                -- 2. الانتقال إلى موقع مرتفع في الهواء
-                local airPosition = Vector3.new(0, 500, 0)
-                hrp.CFrame = CFrame.new(airPosition)
+-- التبديل
+toggle.MouseButton1Click:Connect(function()
+	main.Visible = not main.Visible
+end)
 
-                wait(1.2) -- وقت للضغط اليدوي في الهواء
-            end
-        end
-    end
-end
+-- الكلبشة الذكية
+local isCuffing = false
+cuffBtn.MouseButton1Click:Connect(function()
+	isCuffing = not isCuffing
+	if isCuffing then
+		cuffBtn.Text = "إيقاف الكلبشة"
+		spawn(function()
+			while isCuffing do
+				for _, player in pairs(Players:GetPlayers()) do
+					if player ~= lp and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+						local targetHRP = player.Character.HumanoidRootPart
+						local backOffset = targetHRP.CFrame.LookVector * -2
+						local backPosition = targetHRP.Position + backOffset
+						hrp.CFrame = CFrame.new(backPosition, targetHRP.Position)
+						wait(1.5)
+						hrp.CFrame = CFrame.new(0, 500, 0)
+						wait(1.2)
+					end
+				end
+				wait(0.2)
+			end
+		end)
+	else
+		cuffBtn.Text = "تشغيل الكلبشة الذكية"
+	end
+end)
 
--- حدث الضغط على الزر
-toggleButton.MouseButton1Click:Connect(function()
-    isActive = not isActive
-    if isActive then
-        toggleButton.Text = "إيقاف الكلبشة"
-        spawn(loopCuffThrow)
-    else
-        toggleButton.Text = "تشغيل الكلبشة"
-    end
+-- سكربت السبام
+local isSpamming = false
+skinBtn.MouseButton1Click:Connect(function()
+	if isSpamming then return end
+	isSpamming = true
+	spawn(function()
+		local suffix = 0
+		while isSpamming do
+			suffix += 1
+			game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("/e ;char me " .. tostring(suffix), "All")
+			game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("iraq north dobk", "All")
+			wait(1.5)
+		end
+	end)
 end)
