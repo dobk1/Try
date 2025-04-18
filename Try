@@ -1,104 +1,105 @@
-local Players = game:GetService("Players")
-local lp = Players.LocalPlayer
-local char = lp.Character or lp.CharacterAdded:Wait()
-local hrp = char:WaitForChild("HumanoidRootPart")
+-- واجهة GUI كاملة للموبايل (Delta Android) + زر إظهار/إخفاء
 
--- واجهة GUI
-local gui = Instance.new("ScreenGui", lp:WaitForChild("PlayerGui"))
-gui.Name = "IraqNorthUI"
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "LeviAndroidGui"
 
--- زر فتح/إغلاق القائمة
-local toggle = Instance.new("TextButton", gui)
-toggle.Size = UDim2.new(0, 40, 0, 40)
-toggle.Position = UDim2.new(0, 10, 0, 10)
-toggle.Text = "☰"
-toggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggle.Font = Enum.Font.SourceSansBold
-toggle.TextSize = 24
-toggle.ZIndex = 2
+-- زر جانبي للإظهار/الإخفاء
+local toggleBtn = Instance.new("TextButton", gui)
+toggleBtn.Size = UDim2.new(0, 60, 0, 30)
+toggleBtn.Position = UDim2.new(0, 10, 0, 10)
+toggleBtn.Text = "≡"
+toggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.BorderSizePixel = 0
 
 -- الإطار الرئيسي
-local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0, 220, 0, 180)
-main.Position = UDim2.new(0, 10, 0, 60)
-main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-main.Visible = false
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 270, 0, 260)
+frame.Position = UDim2.new(0, 10, 0, 50)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.BorderSizePixel = 0
+frame.Visible = true
 
--- حقوق
-local rights = Instance.new("TextLabel", main)
-rights.Size = UDim2.new(1, 0, 0, 20)
-rights.Position = UDim2.new(0, 0, 1, -20)
-rights.Text = "حقوق: iraq north dobk"
-rights.BackgroundTransparency = 1
-rights.TextColor3 = Color3.fromRGB(180, 180, 180)
-rights.Font = Enum.Font.SourceSans
-rights.TextSize = 14
+-- الأزرار
+local function createButton(text, yPosition, color)
+	local btn = Instance.new("TextButton", frame)
+	btn.Size = UDim2.new(0, 240, 0, 40)
+	btn.Position = UDim2.new(0, 15, 0, yPosition)
+	btn.Text = text
+	btn.BackgroundColor3 = color
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.Font = Enum.Font.SourceSansBold
+	btn.TextScaled = true
+	btn.BorderSizePixel = 0
+	return btn
+end
 
--- زر الكلبشة
-local cuffBtn = Instance.new("TextButton", main)
-cuffBtn.Size = UDim2.new(1, -20, 0, 40)
-cuffBtn.Position = UDim2.new(0, 10, 0, 10)
-cuffBtn.Text = "تشغيل الكلبشة الذكية"
-cuffBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-cuffBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-cuffBtn.Font = Enum.Font.SourceSansBold
-cuffBtn.TextSize = 18
+local skinStartBtn = createButton("تشغيل السكن", 20, Color3.fromRGB(255, 140, 0))
+local skinStopBtn = createButton("ايقاف السكن", 70, Color3.fromRGB(100, 60, 0))
+local arrestStartBtn = createButton("تشغيل الكلبشة الذكية", 130, Color3.fromRGB(0, 153, 255))
+local arrestStopBtn = createButton("ايقاف الكلبشة", 180, Color3.fromRGB(0, 70, 120))
 
--- زر السكن
-local skinBtn = Instance.new("TextButton", main)
-skinBtn.Size = UDim2.new(1, -20, 0, 40)
-skinBtn.Position = UDim2.new(0, 10, 0, 60)
-skinBtn.Text = "سكن"
-skinBtn.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
-skinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-skinBtn.Font = Enum.Font.SourceSansBold
-skinBtn.TextSize = 18
+-- الحقوق
+local credit = Instance.new("TextLabel", frame)
+credit.Size = UDim2.new(1, 0, 0, 20)
+credit.Position = UDim2.new(0, 0, 1, -20)
+credit.Text = "حقوق: iraq north dobk"
+credit.BackgroundTransparency = 1
+credit.TextColor3 = Color3.fromRGB(255, 255, 255)
+credit.TextScaled = true
+credit.Font = Enum.Font.SourceSans
 
--- التبديل
-toggle.MouseButton1Click:Connect(function()
-	main.Visible = not main.Visible
+-- زر الإخفاء/الإظهار
+toggleBtn.MouseButton1Click:Connect(function()
+	frame.Visible = not frame.Visible
 end)
 
--- الكلبشة الذكية
-local isCuffing = false
-cuffBtn.MouseButton1Click:Connect(function()
-	isCuffing = not isCuffing
-	if isCuffing then
-		cuffBtn.Text = "إيقاف الكلبشة"
-		spawn(function()
-			while isCuffing do
-				for _, player in pairs(Players:GetPlayers()) do
-					if player ~= lp and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-						local targetHRP = player.Character.HumanoidRootPart
-						local backOffset = targetHRP.CFrame.LookVector * -2
-						local backPosition = targetHRP.Position + backOffset
-						hrp.CFrame = CFrame.new(backPosition, targetHRP.Position)
-						wait(1.5)
-						hrp.CFrame = CFrame.new(0, 500, 0)
-						wait(1.2)
-					end
-				end
-				wait(0.2)
-			end
-		end)
-	else
-		cuffBtn.Text = "تشغيل الكلبشة الذكية"
-	end
-end)
-
--- سكربت السبام
-local isSpamming = false
-skinBtn.MouseButton1Click:Connect(function()
-	if isSpamming then return end
-	isSpamming = true
+-- سكربت السكن
+local running = false
+skinStartBtn.MouseButton1Click:Connect(function()
+	if running then return end
+	running = true
 	spawn(function()
-		local suffix = 0
-		while isSpamming do
-			suffix += 1
-			game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("/e ;char me " .. tostring(suffix), "All")
-			game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("iraq north dobk", "All")
+		local count = 0
+		while running do
+			count = count + 1
+			game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("/e ;char me " .. tostring(count), "Team")
 			wait(1.5)
 		end
 	end)
+end)
+
+skinStopBtn.MouseButton1Click:Connect(function()
+	running = false
+end)
+
+-- سكربت الكلبشة الذكية
+local clamping = false
+arrestStartBtn.MouseButton1Click:Connect(function()
+	if clamping then return end
+	clamping = true
+
+	local Players = game:GetService("Players")
+	local LocalPlayer = Players.LocalPlayer
+	local farPos = Vector3.new(0, 1000, 0)
+
+	spawn(function()
+		while clamping do
+			for _, target in pairs(Players:GetPlayers()) do
+				if target ~= LocalPlayer and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+					local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+					if hrp then
+						hrp.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 2)
+						wait(1.5)
+						hrp.CFrame = CFrame.new(farPos)
+						wait(1)
+					end
+				end
+			end
+		end
+	end)
+end)
+
+arrestStopBtn.MouseButton1Click:Connect(function()
+	clamping = false
 end)
