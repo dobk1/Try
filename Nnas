@@ -1,10 +1,10 @@
--- DOBK Jail Combo V2 ☁️🔒🪂 - نسخة الطيران الثابت
+-- DOBK Sky Jail V3 ☁️💀🔒 - نقلك بعيد + تجميع لاعبين فوقك فعلياً
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local UserInputService = game:GetService("UserInputService")
 local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 
+-- واجهة GUI
 local gui = Instance.new("ScreenGui", game.CoreGui)
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 300, 0, 200)
@@ -17,71 +17,46 @@ frame.Draggable = true
 
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "☁️ DOBK Jail Combo V2 - طيران ثابت"
+title.Text = "☁️ DOBK Sky Jail V3"
 title.TextColor3 = Color3.new(1, 0, 0.2)
 title.BackgroundTransparency = 1
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
 
-local btnBring = Instance.new("TextButton", frame)
-btnBring.Size = UDim2.new(1, -20, 0, 40)
-btnBring.Position = UDim2.new(0, 10, 0, 40)
-btnBring.Text = "☁️ تجميع اللاعبين فوقي"
-btnBring.BackgroundColor3 = Color3.fromRGB(60, 60, 140)
-btnBring.TextColor3 = Color3.new(1, 1, 1)
-btnBring.TextScaled = true
-btnBring.Font = Enum.Font.GothamBold
+-- زر نقلك للسماء فعلياً
+local btnFly = Instance.new("TextButton", frame)
+btnFly.Size = UDim2.new(1, -20, 0, 40)
+btnFly.Position = UDim2.new(0, 10, 0, 40)
+btnFly.Text = "🚀 طيرني بعيد فعلياً"
+btnFly.BackgroundColor3 = Color3.fromRGB(60, 60, 140)
+btnFly.TextColor3 = Color3.new(1, 1, 1)
+btnFly.TextScaled = true
+btnFly.Font = Enum.Font.GothamBold
 
-local btnTap = Instance.new("TextButton", frame)
-btnTap.Size = UDim2.new(1, -20, 0, 40)
-btnTap.Position = UDim2.new(0, 10, 0, 90)
-btnTap.Text = "🔒 كلبشة باللمس اليدوي"
-btnTap.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
-btnTap.TextColor3 = Color3.new(1, 1, 1)
-btnTap.TextScaled = true
-btnTap.Font = Enum.Font.GothamBold
+-- زر تجميع اللاعبين فوقك
+local btnGather = Instance.new("TextButton", frame)
+btnGather.Size = UDim2.new(1, -20, 0, 40)
+btnGather.Position = UDim2.new(0, 10, 0, 90)
+btnGather.Text = "☁️ اجمع اللاعبين فوقي"
+btnGather.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+btnGather.TextColor3 = Color3.new(1, 1, 1)
+btnGather.TextScaled = true
+btnGather.Font = Enum.Font.GothamBold
 
--- طيران ثابت عند التشغيل
-local function floatInAir()
-    local pos = Vector3.new(9999, 9999, 9999)
-    local root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if root then
-        root.Anchored = true
-        root.CFrame = CFrame.new(pos)
-    end
-end
-
-floatInAir()
-
--- bring all فوق الراس
-btnBring.MouseButton1Click:Connect(function()
-    local pos = hrp.Position + Vector3.new(0, 5, 0)
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-            plr.Character.HumanoidRootPart.CFrame = CFrame.new(pos + Vector3.new(math.random(-2, 2), 0, math.random(-2, 2)))
-        end
-    end
+-- تنفيذ الطيران الحقيقي
+btnFly.MouseButton1Click:Connect(function()
+    local floatPos = Vector3.new(9999, 5000, 9999)
+    LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(floatPos))
+    task.wait(0.2)
+    if hrp then hrp.Anchored = true end
 end)
 
--- كلبشة عند اللمس اليدوي
-btnTap.MouseButton1Click:Connect(function()
-    local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
-    local part = tool and (tool:FindFirstChild("Handle") or tool:FindFirstChildWhichIsA("Part"))
-    if not tool or not part then
-        btnTap.Text = "❌ ماكو كلبشة بيدك"
-        return
-    end
-
+-- تجميع كل اللاعبين فوقك
+btnGather.MouseButton1Click:Connect(function()
+    local basePos = hrp.Position + Vector3.new(0, 5, 0)
     for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("RightFoot") then
-            local foot = plr.Character.RightFoot
-            firetouchinterest(part, foot, 0)
-            task.wait(0.1)
-            firetouchinterest(part, foot, 1)
-            task.wait(0.1)
+        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            plr.Character.HumanoidRootPart.CFrame = CFrame.new(basePos + Vector3.new(math.random(-3,3), 0, math.random(-3,3)))
         end
     end
-    btnTap.Text = "✅ تم اللمس"
-    task.wait(1)
-    btnTap.Text = "🔒 كلبشة باللمس اليدوي"
 end)
