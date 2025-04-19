@@ -1,15 +1,18 @@
--- فاحص الباكدورات الذكي 🔍🔥
--- يركّز على الباكدورات المشكوك بيها + القوية جداً
+-- فاحص الباكدورات الذكي 🔥 بموقع متحرك وسط الشاشة
 local gui = Instance.new("ScreenGui", game.CoreGui)
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 400, 0, 300)
-frame.Position = UDim2.new(0.5, -200, 0, 100)
-frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 420, 0, 300)
+frame.Position = UDim2.new(0.5, -210, 0.5, -150)
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
 
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "🚨 فاحص الباكدورات الذكية"
+title.Text = "🚨 فاحص الباكدورات الذكي (متحرك)"
 title.TextColor3 = Color3.new(1, 0, 0)
 title.BackgroundTransparency = 1
 title.TextScaled = true
