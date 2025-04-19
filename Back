@@ -1,85 +1,22 @@
--- جهاز رعب مطور - استدعاء مخلوق مرعب أمام اللاعب 💀
 local gui = Instance.new("ScreenGui", game.CoreGui)
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 320, 0, 220)
-frame.Position = UDim2.new(0, 20, 0, 100)
-frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-frame.BorderSizePixel = 0
+local label = Instance.new("TextLabel", gui)
+label.Size = UDim2.new(0, 400, 0, 40)
+label.Position = UDim2.new(0.5, -200, 0, 40)
+label.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+label.TextColor3 = Color3.new(1, 0, 0)
+label.TextScaled = true
+label.Font = Enum.Font.GothamBold
+label.BorderSizePixel = 0
+label.Visible = false
 
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "👹 جهاز رعب - استدعاء المخلوقات"
-title.TextColor3 = Color3.new(1, 0, 0)
-title.BackgroundTransparency = 1
-title.TextScaled = true
-title.Font = Enum.Font.GothamBold
+local found = false
 
-local spawnBtn = Instance.new("TextButton", frame)
-spawnBtn.Size = UDim2.new(1, -20, 0, 45)
-spawnBtn.Position = UDim2.new(0, 10, 0, 50)
-spawnBtn.Text = "👁️ استدعِ مخلوق الرعب أمامك"
-spawnBtn.BackgroundColor3 = Color3.fromRGB(70, 0, 0)
-spawnBtn.TextColor3 = Color3.new(1, 1, 1)
-spawnBtn.TextScaled = true
-spawnBtn.Font = Enum.Font.GothamBold
-spawnBtn.BorderSizePixel = 0
-
-local attackBtn = Instance.new("TextButton", frame)
-attackBtn.Size = UDim2.new(1, -20, 0, 45)
-attackBtn.Position = UDim2.new(0, 10, 0, 105)
-attackBtn.Text = "💀 أطلقه لمطاردة الجميع"
-attackBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
-attackBtn.TextColor3 = Color3.new(1, 1, 1)
-attackBtn.TextScaled = true
-attackBtn.Font = Enum.Font.GothamBold
-attackBtn.BorderSizePixel = 0
-
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-
-local function createHorror(pos)
-    local model = Instance.new("Model", workspace)
-    model.Name = "RedDemon"
-
-    local part = Instance.new("Part", model)
-    part.Size = Vector3.new(4, 4, 4)
-    part.Anchored = false
-    part.Position = pos or Vector3.new(0, 10, 0)
-    part.BrickColor = BrickColor.new("Really red")
-    part.Material = Enum.Material.Neon
-    part.Name = "Head"
-
-    local humanoid = Instance.new("Humanoid", model)
-    humanoid.WalkSpeed = 20
-    humanoid.Name = "Humanoid"
-
-    return model
-end
-
-local rage = nil
-
-spawnBtn.MouseButton1Click:Connect(function()
-    if rage then rage:Destroy() end
-    local pos = char:FindFirstChild("HumanoidRootPart") and char.HumanoidRootPart.Position + Vector3.new(0, 3, -10)
-    rage = createHorror(pos)
-end)
-
-attackBtn.MouseButton1Click:Connect(function()
-    if not rage then return end
-    local hrp = rage:FindFirstChild("Head")
-    local hum = rage:FindFirstChild("Humanoid")
-    if hrp and hum then
-        spawn(function()
-            while rage and rage.Parent and hum.Health > 0 do
-                for _, plr in pairs(Players:GetPlayers()) do
-                    if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                        hrp.CFrame = CFrame.new(hrp.Position, plr.Character.HumanoidRootPart.Position)
-                        hum:MoveTo(plr.Character.HumanoidRootPart.Position)
-                        wait(0.4)
-                    end
-                end
-            end
-        end)
+for _, obj in pairs(game:GetDescendants()) do
+    if (obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction")) and not obj:IsDescendantOf(game.Players) then
+        if not found then
+            label.Text = "📡 تم الكشف عن Backdoor: " .. obj:GetFullName()
+            label.Visible = true
+            found = true
+        end
     end
-end)
+end
