@@ -1,65 +1,68 @@
-local Players = game:GetService("Players")
-local lp = Players.LocalPlayer
-local char = lp.Character or lp.CharacterAdded:Wait()
-local hrp = char:WaitForChild("HumanoidRootPart")
+-- أداة تحكم صوتي في GlobalPianoConnector 🎹🔊
+local gui = Instance.new("ScreenGui", game.CoreGui)
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 300, 0, 220)
+frame.Position = UDim2.new(0.5, -150, 0, 100)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.BorderSizePixel = 0
 
--- إنشاء واجهة GUI
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "CuffGUI"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = lp:WaitForChild("PlayerGui")
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Text = "🎼 تحكم بالبيانو - باكدور الصوت"
+title.TextColor3 = Color3.new(1, 0.2, 0.2)
+title.BackgroundTransparency = 1
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
 
--- إنشاء زر التفعيل
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 150, 0, 50)
-toggleButton.Position = UDim2.new(0, 20, 0, 20)
-toggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.Font = Enum.Font.SourceSansBold
-toggleButton.TextSize = 24
-toggleButton.Text = "تشغيل الكلبشة"
-toggleButton.Parent = screenGui
+local function getRemote()
+    local remote = nil
+    pcall(function()
+        remote = workspace:FindFirstChild("Folder")
+            and workspace.Folder:FindFirstChild("Folder")
+            and workspace.Folder.Folder:FindFirstChild("GlobalPianoConnector")
+    end)
+    return remote
+end
 
--- متغير لتتبع حالة التفعيل
-local isActive = false
-
--- وظيفة الضغط على ClickDetectors
-local function spamClickDetectors(target)
-    for i = 1, 5 do
-        for _, part in pairs(target:GetDescendants()) do
-            if part:IsA("ClickDetector") then
-                fireclickdetector(part)
-            end
-        end
-        wait(0.1)
+local function sendRemote(command, value)
+    local r = getRemote()
+    if r and r:IsA("RemoteEvent") then
+        r:FireServer(command, value)
     end
 end
 
--- وظيفة الكلبشة والرمي
-local function loopCuffThrow()
-    while isActive do
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= lp and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                local targetHRP = player.Character.HumanoidRootPart
-                hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -2)
-                wait(0.3)
-                spamClickDetectors(player.Character)
-                wait(0.2)
-                targetHRP.Velocity = Vector3.new(0, 200, math.random(-50, 50))
-                wait(0.5)
-            end
-        end
-        wait(4)
-    end
-end
+local upBtn = Instance.new("TextButton", frame)
+upBtn.Size = UDim2.new(1, -20, 0, 40)
+upBtn.Position = UDim2.new(0, 10, 0, 50)
+upBtn.Text = "🔊 رفع الصوت إلى 10"
+upBtn.BackgroundColor3 = Color3.fromRGB(60, 120, 60)
+upBtn.TextColor3 = Color3.new(1, 1, 1)
+upBtn.TextScaled = true
+upBtn.Font = Enum.Font.GothamBold
+upBtn.MouseButton1Click:Connect(function()
+    sendRemote("volume", 10)
+end)
 
--- حدث الضغط على الزر
-toggleButton.MouseButton1Click:Connect(function()
-    isActive = not isActive
-    if isActive then
-        toggleButton.Text = "إيقاف الكلبشة"
-        spawn(loopCuffThrow)
-    else
-        toggleButton.Text = "تشغيل الكلبشة"
-    end
+local downBtn = Instance.new("TextButton", frame)
+downBtn.Size = UDim2.new(1, -20, 0, 40)
+downBtn.Position = UDim2.new(0, 10, 0, 95)
+downBtn.Text = "🔉 خفض الصوت إلى 1"
+downBtn.BackgroundColor3 = Color3.fromRGB(120, 60, 60)
+downBtn.TextColor3 = Color3.new(1, 1, 1)
+downBtn.TextScaled = true
+downBtn.Font = Enum.Font.GothamBold
+downBtn.MouseButton1Click:Connect(function()
+    sendRemote("volume", 1)
+end)
+
+local noteBtn = Instance.new("TextButton", frame)
+noteBtn.Size = UDim2.new(1, -20, 0, 40)
+noteBtn.Position = UDim2.new(0, 10, 0, 140)
+noteBtn.Text = "🎹 عزف نغمة C4"
+noteBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 200)
+noteBtn.TextColor3 = Color3.new(1, 1, 1)
+noteBtn.TextScaled = true
+noteBtn.Font = Enum.Font.GothamBold
+noteBtn.MouseButton1Click:Connect(function()
+    sendRemote("play", "C4")
 end)
