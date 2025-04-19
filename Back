@@ -1,14 +1,14 @@
--- GUI تجربة ريموتات تلقائياً (واحد واحد)
+-- جهاز كشف واستغلال الباكدورات GUI 🔥
 local gui = Instance.new("ScreenGui", game.CoreGui)
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 350, 0, 300)
-frame.Position = UDim2.new(0, 10, 0, 100)
-frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.Size = UDim2.new(0, 400, 0, 350)
+frame.Position = UDim2.new(0, 20, 0, 100)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 frame.BorderSizePixel = 0
 
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "🧪 تجربة الريموتات تلقائي"
+title.Text = "🚨 فاحص واستغلال الباكدورات"
 title.TextColor3 = Color3.new(1, 1, 1)
 title.BackgroundTransparency = 1
 title.TextScaled = true
@@ -16,54 +16,72 @@ title.Font = Enum.Font.GothamBold
 
 local scroll = Instance.new("ScrollingFrame", frame)
 scroll.Position = UDim2.new(0, 0, 0, 35)
-scroll.Size = UDim2.new(1, 0, 1, -75)
+scroll.Size = UDim2.new(1, 0, 1, -35)
 scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 scroll.BackgroundTransparency = 1
 scroll.ScrollBarThickness = 6
 
-local startBtn = Instance.new("TextButton", frame)
-startBtn.Size = UDim2.new(1, 0, 0, 35)
-startBtn.Position = UDim2.new(0, 0, 1, -35)
-startBtn.Text = "🚀 جرّب الريموتات تلقائيًا (واحد واحد)"
-startBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-startBtn.TextColor3 = Color3.new(1, 1, 1)
-startBtn.TextScaled = true
-startBtn.Font = Enum.Font.GothamBold
-startBtn.BorderSizePixel = 0
-
-local remotes = {}
-for _, obj in pairs(game:GetDescendants()) do
-    if (obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction")) and not obj:IsDescendantOf(game.Players) then
-        table.insert(remotes, obj)
-    end
-end
+local folders = {
+    game.ReplicatedStorage,
+    game.Workspace,
+    game.StarterGui,
+    game.StarterPack,
+    game.Lighting
+}
 
 local count = 0
-for _, r in pairs(remotes) do
-    local label = Instance.new("TextLabel", scroll)
-    label.Size = UDim2.new(1, -10, 0, 30)
-    label.Position = UDim2.new(0, 5, 0, count * 32)
-    label.Text = r.ClassName .. " → " .. r:GetFullName()
-    label.TextColor3 = Color3.new(1, 1, 1)
-    label.BackgroundTransparency = 1
-    label.TextScaled = true
-    label.Font = Enum.Font.SourceSansBold
-    count += 1
-end
-scroll.CanvasSize = UDim2.new(0, 0, 0, count * 32)
+for _, folder in ipairs(folders) do
+    for _, obj in ipairs(folder:GetChildren()) do
+        if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
+            local container = Instance.new("Frame", scroll)
+            container.Size = UDim2.new(1, -10, 0, 50)
+            container.Position = UDim2.new(0, 5, 0, count * 55)
+            container.BackgroundTransparency = 1
 
-startBtn.MouseButton1Click:Connect(function()
-    print("✅ بدء تجربة الريموتات تلقائيًا...")
-    for _, r in pairs(remotes) do
-        print("🧪 تجرب: ", r:GetFullName())
-        pcall(function()
-            if r:IsA("RemoteEvent") then
-                r:FireServer("test", true, 999)
-            elseif r:IsA("RemoteFunction") then
-                local result = r:InvokeServer("test", true, 999)
-                print("🔁 نتيجة:", result)
-            end
-        end)
-        wait(1.5) -- تأخير بين كل ريموت حتى تتفادى الطرد
+            local label = Instance.new("TextLabel", container)
+            label.Size = UDim2.new(0.7, 0, 1, 0)
+            label.Text = obj.ClassName .. ": " .. obj.Name
+            label.TextColor3 = Color3.new(1, 1, 1)
+            label.BackgroundTransparency = 1
+            label.TextScaled = true
+            label.Font = Enum.Font.SourceSansBold
+
+            local testBtn = Instance.new("TextButton", container)
+            testBtn.Size = UDim2.new(0.3, 0, 1, 0)
+            testBtn.Position = UDim2.new(0.7, 0, 0, 0)
+            testBtn.Text = "💣 جرب"
+            testBtn.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
+            testBtn.TextColor3 = Color3.new(1, 1, 1)
+            testBtn.TextScaled = true
+            testBtn.Font = Enum.Font.GothamBold
+            testBtn.BorderSizePixel = 0
+
+            testBtn.MouseButton1Click:Connect(function()
+                pcall(function()
+                    if obj:IsA("RemoteEvent") then
+                        obj:FireServer("kick", game.Players.LocalPlayer)
+                        obj:FireServer("kill", game.Players.LocalPlayer)
+                        obj:FireServer("bring", "all")
+                    elseif obj:IsA("RemoteFunction") then
+                        local result = obj:InvokeServer("kill", game.Players.LocalPlayer)
+                        print("النتيجة:", result)
+                    end
+                end)
+            end)
+
+            count += 1
+        end
     end
-end)
+end
+scroll.CanvasSize = UDim2.new(0, 0, 0, count * 55)
+
+if count == 0 then
+    local noResult = Instance.new("TextLabel", scroll)
+    noResult.Size = UDim2.new(1, -10, 0, 30)
+    noResult.Position = UDim2.new(0, 5, 0, 0)
+    noResult.Text = "✅ لا توجد ريموتات واضحة في الأماكن الآمنة"
+    noResult.TextColor3 = Color3.new(0, 1, 0)
+    noResult.BackgroundTransparency = 1
+    noResult.TextScaled = true
+    noResult.Font = Enum.Font.SourceSansBold
+end
