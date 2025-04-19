@@ -1,4 +1,4 @@
--- جهاز رعب: استدعاء مخلوقات تهاجم اللاعبين 💀
+-- جهاز رعب مطور - استدعاء مخلوق مرعب أمام اللاعب 💀
 local gui = Instance.new("ScreenGui", game.CoreGui)
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 320, 0, 220)
@@ -17,7 +17,7 @@ title.Font = Enum.Font.GothamBold
 local spawnBtn = Instance.new("TextButton", frame)
 spawnBtn.Size = UDim2.new(1, -20, 0, 45)
 spawnBtn.Position = UDim2.new(0, 10, 0, 50)
-spawnBtn.Text = "👁️ استدعِ مخلوق الرعب"
+spawnBtn.Text = "👁️ استدعِ مخلوق الرعب أمامك"
 spawnBtn.BackgroundColor3 = Color3.fromRGB(70, 0, 0)
 spawnBtn.TextColor3 = Color3.new(1, 1, 1)
 spawnBtn.TextScaled = true
@@ -35,9 +35,12 @@ attackBtn.Font = Enum.Font.GothamBold
 attackBtn.BorderSizePixel = 0
 
 local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+
 local function createHorror(pos)
     local model = Instance.new("Model", workspace)
-    model.Name = "RageCube"
+    model.Name = "RedDemon"
 
     local part = Instance.new("Part", model)
     part.Size = Vector3.new(4, 4, 4)
@@ -58,7 +61,8 @@ local rage = nil
 
 spawnBtn.MouseButton1Click:Connect(function()
     if rage then rage:Destroy() end
-    rage = createHorror(Vector3.new(0, 10, 0))
+    local pos = char:FindFirstChild("HumanoidRootPart") and char.HumanoidRootPart.Position + Vector3.new(0, 3, -10)
+    rage = createHorror(pos)
 end)
 
 attackBtn.MouseButton1Click:Connect(function()
