@@ -59,15 +59,20 @@ end)
 
 -- سكربت السكن
 local running = false
+local skinList = {"coolkid", "johnDoe", "noob", "builderman", "guest", "ghost", "admin", "zombie", "bacon"} -- اسماء سكنات عشوائية
+
 skinStartBtn.MouseButton1Click:Connect(function()
 	if running then return end
 	running = true
 	spawn(function()
-		local count = 0
 		while running do
-			count = count + 1
-			game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("/e ;char me " .. tostring(count), "Team")
-			wait(1.5)
+			local skin = skinList[math.random(1, #skinList)]
+			local args = {
+				[1] = "/e ;char me " .. skin,
+				[2] = "All"
+			}
+			game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(unpack(args))
+			wait(0.5) -- سرعة التبديل
 		end
 	end)
 end)
