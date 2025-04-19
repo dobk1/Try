@@ -1,5 +1,6 @@
--- 🔥 DOBK Jail Combo V1 🔒💨
--- كلبشة + طيحة + انتقال تلقائي بين اللاعبين (لمس حقيقي)
+
+-- 🔥 DOBK Jail Combo V1 GUI 🔒💨
+-- كلبشة + طيحة + انتقال تلقائي بين اللاعبين (مع واجهة)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -8,21 +9,40 @@ local hrp = char:WaitForChild("HumanoidRootPart")
 local tool = char:FindFirstChildOfClass("Tool")
 local part = tool and tool:FindFirstChildWhichIsA("Part")
 
-local targets = {}
-for _, plr in pairs(Players:GetPlayers()) do
-    if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("RightFoot") then
-        table.insert(targets, plr)
-    end
-end
+-- واجهة GUI
+local gui = Instance.new("ScreenGui", game.CoreGui)
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 300, 0, 150)
+frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
 
-local far = Vector3.new(9999, 9999, 9999)
-local ready = false
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Text = "🔒 DOBK Jail Combo GUI"
+title.TextColor3 = Color3.new(1, 0, 0)
+title.BackgroundTransparency = 1
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
 
+local button = Instance.new("TextButton", frame)
+button.Size = UDim2.new(1, -20, 0, 50)
+button.Position = UDim2.new(0, 10, 0, 50)
+button.Text = "💥 بدء الكلبشة الجماعية"
+button.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+button.TextColor3 = Color3.new(1, 1, 1)
+button.TextScaled = true
+button.Font = Enum.Font.GothamBold
+
+-- دالة انتظار الضغط
 local function waitForTap()
-    ready = false
+    local ready = false
     local conn
     conn = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if not gameProcessed and input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if not gameProcessed and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) then
             ready = true
             conn:Disconnect()
         end
@@ -30,9 +50,27 @@ local function waitForTap()
     repeat task.wait() until ready
 end
 
+-- دالة الكلبشة
 local function jailCombo()
+    tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
+    part = tool and tool:FindFirstChildWhichIsA("Part")
+    hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+    if not tool or not part or not hrp then
+        button.Text = "❌ تأكد إنك ماسك الكلبشة!"
+        return
+    end
+
+    local targets = {}
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("RightFoot") then
+            table.insert(targets, plr)
+        end
+    end
+
+    local far = Vector3.new(9999, 9999, 9999)
+
     for _, victim in pairs(targets) do
-        if not tool or not part or not victim.Character then continue end
         local foot = victim.Character:FindFirstChild("RightFoot")
         if not foot then continue end
 
@@ -44,22 +82,17 @@ local function jailCombo()
         task.wait(0.3)
 
         hrp.CFrame = CFrame.new(far)
-        print("👣 تم الكلبشة على: ", victim.Name)
+        button.Text = "🧲 كلبشة: " .. victim.Name
 
-        print("👆 اضغط الشاشة حتى تفك الكلبشة وتطيحه")
         waitForTap()
 
         local victimHRP = victim.Character:FindFirstChild("HumanoidRootPart")
         if victimHRP then
             victimHRP.CFrame = CFrame.new(far + Vector3.new(0, 50, 0))
         end
-
         task.wait(0.5)
     end
+    button.Text = "✅ تم إنهاء الجولة"
 end
 
-if tool and part then
-    jailCombo()
-else
-    warn("❌ تأكد إنك ماسك الكلبشة بيدك!")
-end
+button.MouseButton1Click:Connect(jailCombo)
