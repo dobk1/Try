@@ -1,94 +1,65 @@
--- فاحص الباكدورات الذكي 🔥 مع زر تجربة مباشر
-local gui = Instance.new("ScreenGui", game.CoreGui)
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 420, 0, 300)
-frame.Position = UDim2.new(0.5, -210, 0.5, -150)
-frame.AnchorPoint = Vector2.new(0.5, 0.5)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-frame.BorderSizePixel = 0
-frame.Active = true
-frame.Draggable = true
-frame.Parent = gui
+-- 🔥 DOBK Jail Combo V1 🔒💨
+-- كلبشة + طيحة + انتقال تلقائي بين اللاعبين (لمس حقيقي)
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+local tool = char:FindFirstChildOfClass("Tool")
+local part = tool and tool:FindFirstChildWhichIsA("Part")
 
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "🚨 فاحص الباكدورات الذكي (متحرك + تجربة)"
-title.TextColor3 = Color3.new(1, 0, 0)
-title.BackgroundTransparency = 1
-title.TextScaled = true
-title.Font = Enum.Font.GothamBold
-
-local scroll = Instance.new("ScrollingFrame", frame)
-scroll.Position = UDim2.new(0, 0, 0, 35)
-scroll.Size = UDim2.new(1, 0, 1, -35)
-scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-scroll.BackgroundTransparency = 1
-scroll.ScrollBarThickness = 6
-
-local keywords = {
-    "Admin", "Kick", "Ban", "Cuff", "Handler", "Execute", "Command", "Retriever", "Server", "Control", "Teleport", "Exploit", "Rank", "RemoteAccess"
-}
-
-local function isSuspicious(name)
-    for _, word in ipairs(keywords) do
-        if string.lower(name):find(string.lower(word)) then
-            return true
-        end
-    end
-    return false
-end
-
-local count = 0
-for _, obj in ipairs(game:GetDescendants()) do
-    if (obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction")) and not obj:IsDescendantOf(game.Players) then
-        if isSuspicious(obj.Name) or isSuspicious(obj:GetFullName()) then
-            local container = Instance.new("Frame", scroll)
-            container.Size = UDim2.new(1, -10, 0, 35)
-            container.Position = UDim2.new(0, 5, 0, count * 38)
-            container.BackgroundTransparency = 1
-
-            local label = Instance.new("TextLabel", container)
-            label.Size = UDim2.new(0.7, 0, 1, 0)
-            label.Text = obj.ClassName .. ": " .. obj:GetFullName()
-            label.TextColor3 = Color3.new(1, 1, 1)
-            label.BackgroundTransparency = 1
-            label.TextScaled = true
-            label.Font = Enum.Font.SourceSansBold
-
-            local testBtn = Instance.new("TextButton", container)
-            testBtn.Size = UDim2.new(0.3, 0, 1, 0)
-            testBtn.Position = UDim2.new(0.7, 0, 0, 0)
-            testBtn.Text = "💥 تجربة"
-            testBtn.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
-            testBtn.TextColor3 = Color3.new(1, 1, 1)
-            testBtn.TextScaled = true
-            testBtn.Font = Enum.Font.GothamBold
-            testBtn.BorderSizePixel = 0
-
-            testBtn.MouseButton1Click:Connect(function()
-                pcall(function()
-                    if obj:IsA("RemoteEvent") then
-                        obj:FireServer("kick", game.Players.LocalPlayer)
-                    elseif obj:IsA("RemoteFunction") then
-                        obj:InvokeServer("kick", game.Players.LocalPlayer)
-                    end
-                end)
-            end)
-
-            count += 1
-        end
+local targets = {}
+for _, plr in pairs(Players:GetPlayers()) do
+    if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("RightFoot") then
+        table.insert(targets, plr)
     end
 end
 
-if count == 0 then
-    local none = Instance.new("TextLabel", scroll)
-    none.Size = UDim2.new(1, -10, 0, 30)
-    none.Position = UDim2.new(0, 5, 0, 0)
-    none.Text = "✅ لا توجد باكدورات مشبوهة واضحة"
-    none.TextColor3 = Color3.new(0, 1, 0)
-    none.BackgroundTransparency = 1
-    none.TextScaled = true
-    none.Font = Enum.Font.SourceSansBold
+local far = Vector3.new(9999, 9999, 9999)
+local ready = false
+
+local function waitForTap()
+    ready = false
+    local conn
+    conn = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if not gameProcessed and input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            ready = true
+            conn:Disconnect()
+        end
+    end)
+    repeat task.wait() until ready
 end
 
-scroll.CanvasSize = UDim2.new(0, 0, 0, count * 38)
+local function jailCombo()
+    for _, victim in pairs(targets) do
+        if not tool or not part or not victim.Character then continue end
+        local foot = victim.Character:FindFirstChild("RightFoot")
+        if not foot then continue end
+
+        hrp.CFrame = foot.CFrame * CFrame.new(0, 0, 1.5)
+        task.wait(0.2)
+        firetouchinterest(part, foot, 0)
+        task.wait(0.1)
+        firetouchinterest(part, foot, 1)
+        task.wait(0.3)
+
+        hrp.CFrame = CFrame.new(far)
+        print("👣 تم الكلبشة على: ", victim.Name)
+
+        print("👆 اضغط الشاشة حتى تفك الكلبشة وتطيحه")
+        waitForTap()
+
+        local victimHRP = victim.Character:FindFirstChild("HumanoidRootPart")
+        if victimHRP then
+            victimHRP.CFrame = CFrame.new(far + Vector3.new(0, 50, 0))
+        end
+
+        task.wait(0.5)
+    end
+end
+
+if tool and part then
+    jailCombo()
+else
+    warn("❌ تأكد إنك ماسك الكلبشة بيدك!")
+end
