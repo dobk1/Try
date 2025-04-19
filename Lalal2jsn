@@ -1,13 +1,11 @@
 
--- 🔥 DOBK Jail Combo V1 GUI 🔒💨
--- كلبشة + طيحة + انتقال تلقائي بين اللاعبين (مع واجهة)
+-- 🔥 DOBK Jail Combo V1 GUI (Fix: Handle support)
+-- كلبشة + طيحة + انتقال تلقائي بين اللاعبين
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
-local tool = char:FindFirstChildOfClass("Tool")
-local part = tool and tool:FindFirstChildWhichIsA("Part")
 
 -- واجهة GUI
 local gui = Instance.new("ScreenGui", game.CoreGui)
@@ -37,7 +35,7 @@ button.TextColor3 = Color3.new(1, 1, 1)
 button.TextScaled = true
 button.Font = Enum.Font.GothamBold
 
--- دالة انتظار الضغط
+-- انتظار اللمسة
 local function waitForTap()
     local ready = false
     local conn
@@ -50,11 +48,11 @@ local function waitForTap()
     repeat task.wait() until ready
 end
 
--- دالة الكلبشة
+-- كلبشة جماعية
 local function jailCombo()
-    tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
-    part = tool and tool:FindFirstChildWhichIsA("Part")
-    hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+    local part = tool and (tool:FindFirstChild("Handle") or tool:FindFirstChildWhichIsA("Part"))
+    local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 
     if not tool or not part or not hrp then
         button.Text = "❌ تأكد إنك ماسك الكلبشة!"
