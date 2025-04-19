@@ -84,7 +84,7 @@ arrestStartBtn.MouseButton1Click:Connect(function()
 
 	local Players = game:GetService("Players")
 	local LocalPlayer = Players.LocalPlayer
-	local farPos = Vector3.new(0, 1000, 0)
+	local farPos = Vector3.new(999999, 999999, 999999) -- نقطة بعيدة جداً خارج الماب
 
 	spawn(function()
 		while clamping do
