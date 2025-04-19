@@ -1,87 +1,81 @@
--- جهاز كشف واستغلال الباكدورات GUI 🔥
+-- جهاز رعب: استدعاء مخلوقات تهاجم اللاعبين 💀
 local gui = Instance.new("ScreenGui", game.CoreGui)
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 400, 0, 350)
+frame.Size = UDim2.new(0, 320, 0, 220)
 frame.Position = UDim2.new(0, 20, 0, 100)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 frame.BorderSizePixel = 0
 
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "🚨 فاحص واستغلال الباكدورات"
-title.TextColor3 = Color3.new(1, 1, 1)
+title.Text = "👹 جهاز رعب - استدعاء المخلوقات"
+title.TextColor3 = Color3.new(1, 0, 0)
 title.BackgroundTransparency = 1
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
 
-local scroll = Instance.new("ScrollingFrame", frame)
-scroll.Position = UDim2.new(0, 0, 0, 35)
-scroll.Size = UDim2.new(1, 0, 1, -35)
-scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-scroll.BackgroundTransparency = 1
-scroll.ScrollBarThickness = 6
+local spawnBtn = Instance.new("TextButton", frame)
+spawnBtn.Size = UDim2.new(1, -20, 0, 45)
+spawnBtn.Position = UDim2.new(0, 10, 0, 50)
+spawnBtn.Text = "👁️ استدعِ مخلوق الرعب"
+spawnBtn.BackgroundColor3 = Color3.fromRGB(70, 0, 0)
+spawnBtn.TextColor3 = Color3.new(1, 1, 1)
+spawnBtn.TextScaled = true
+spawnBtn.Font = Enum.Font.GothamBold
+spawnBtn.BorderSizePixel = 0
 
-local folders = {
-    game.ReplicatedStorage,
-    game.Workspace,
-    game.StarterGui,
-    game.StarterPack,
-    game.Lighting
-}
+local attackBtn = Instance.new("TextButton", frame)
+attackBtn.Size = UDim2.new(1, -20, 0, 45)
+attackBtn.Position = UDim2.new(0, 10, 0, 105)
+attackBtn.Text = "💀 أطلقه لمطاردة الجميع"
+attackBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+attackBtn.TextColor3 = Color3.new(1, 1, 1)
+attackBtn.TextScaled = true
+attackBtn.Font = Enum.Font.GothamBold
+attackBtn.BorderSizePixel = 0
 
-local count = 0
-for _, folder in ipairs(folders) do
-    for _, obj in ipairs(folder:GetChildren()) do
-        if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
-            local container = Instance.new("Frame", scroll)
-            container.Size = UDim2.new(1, -10, 0, 50)
-            container.Position = UDim2.new(0, 5, 0, count * 55)
-            container.BackgroundTransparency = 1
+local Players = game:GetService("Players")
+local function createHorror(pos)
+    local model = Instance.new("Model", workspace)
+    model.Name = "RageCube"
 
-            local label = Instance.new("TextLabel", container)
-            label.Size = UDim2.new(0.7, 0, 1, 0)
-            label.Text = obj.ClassName .. ": " .. obj.Name
-            label.TextColor3 = Color3.new(1, 1, 1)
-            label.BackgroundTransparency = 1
-            label.TextScaled = true
-            label.Font = Enum.Font.SourceSansBold
+    local part = Instance.new("Part", model)
+    part.Size = Vector3.new(4, 4, 4)
+    part.Anchored = false
+    part.Position = pos or Vector3.new(0, 10, 0)
+    part.BrickColor = BrickColor.new("Really red")
+    part.Material = Enum.Material.Neon
+    part.Name = "Head"
 
-            local testBtn = Instance.new("TextButton", container)
-            testBtn.Size = UDim2.new(0.3, 0, 1, 0)
-            testBtn.Position = UDim2.new(0.7, 0, 0, 0)
-            testBtn.Text = "💣 جرب"
-            testBtn.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
-            testBtn.TextColor3 = Color3.new(1, 1, 1)
-            testBtn.TextScaled = true
-            testBtn.Font = Enum.Font.GothamBold
-            testBtn.BorderSizePixel = 0
+    local humanoid = Instance.new("Humanoid", model)
+    humanoid.WalkSpeed = 20
+    humanoid.Name = "Humanoid"
 
-            testBtn.MouseButton1Click:Connect(function()
-                pcall(function()
-                    if obj:IsA("RemoteEvent") then
-                        obj:FireServer("kick", game.Players.LocalPlayer)
-                        obj:FireServer("kill", game.Players.LocalPlayer)
-                        obj:FireServer("bring", "all")
-                    elseif obj:IsA("RemoteFunction") then
-                        local result = obj:InvokeServer("kill", game.Players.LocalPlayer)
-                        print("النتيجة:", result)
+    return model
+end
+
+local rage = nil
+
+spawnBtn.MouseButton1Click:Connect(function()
+    if rage then rage:Destroy() end
+    rage = createHorror(Vector3.new(0, 10, 0))
+end)
+
+attackBtn.MouseButton1Click:Connect(function()
+    if not rage then return end
+    local hrp = rage:FindFirstChild("Head")
+    local hum = rage:FindFirstChild("Humanoid")
+    if hrp and hum then
+        spawn(function()
+            while rage and rage.Parent and hum.Health > 0 do
+                for _, plr in pairs(Players:GetPlayers()) do
+                    if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                        hrp.CFrame = CFrame.new(hrp.Position, plr.Character.HumanoidRootPart.Position)
+                        hum:MoveTo(plr.Character.HumanoidRootPart.Position)
+                        wait(0.4)
                     end
-                end)
-            end)
-
-            count += 1
-        end
+                end
+            end
+        end)
     end
-end
-scroll.CanvasSize = UDim2.new(0, 0, 0, count * 55)
-
-if count == 0 then
-    local noResult = Instance.new("TextLabel", scroll)
-    noResult.Size = UDim2.new(1, -10, 0, 30)
-    noResult.Position = UDim2.new(0, 5, 0, 0)
-    noResult.Text = "✅ لا توجد ريموتات واضحة في الأماكن الآمنة"
-    noResult.TextColor3 = Color3.new(0, 1, 0)
-    noResult.BackgroundTransparency = 1
-    noResult.TextScaled = true
-    noResult.Font = Enum.Font.SourceSansBold
-end
+end)
