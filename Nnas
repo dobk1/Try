@@ -42,11 +42,11 @@ btnGather.TextColor3 = Color3.new(1, 1, 1)
 btnGather.TextScaled = true
 btnGather.Font = Enum.Font.GothamBold
 
--- زر سحب كل الأدوات الوهمية
+-- زر سحب أدوات اللاعبين فقط (وهمي)
 local btnGrabAllTools = Instance.new("TextButton", frame)
 btnGrabAllTools.Size = UDim2.new(1, -20, 0, 40)
 btnGrabAllTools.Position = UDim2.new(0, 10, 0, 140)
-btnGrabAllTools.Text = "🧤 اسحب كل الأدوات بالماب (وهمي)"
+btnGrabAllTools.Text = "🧤 اسحب أدوات اللاعبين (وهمي)"
 btnGrabAllTools.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
 btnGrabAllTools.TextColor3 = Color3.new(1, 1, 1)
 btnGrabAllTools.TextScaled = true
@@ -70,13 +70,31 @@ btnGather.MouseButton1Click:Connect(function()
     end
 end)
 
--- تنفيذ سحب الأدوات (وهمي)
+-- سحب الأدوات من اللاعبين (وهمي فقط عندك)
 btnGrabAllTools.MouseButton1Click:Connect(function()
-    for _, obj in pairs(game:GetDescendants()) do
-        if obj:IsA("Tool") then
-            local clone = obj:Clone()
-            clone.Name = "[💼 وهمي] " .. obj.Name
-            clone.Parent = LocalPlayer.Backpack
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            -- أدوات من Backpack
+            local backpack = plr:FindFirstChild("Backpack")
+            if backpack then
+                for _, tool in pairs(backpack:GetChildren()) do
+                    if tool:IsA("Tool") then
+                        local clone = tool:Clone()
+                        clone.Name = "[🎒مسروق] " .. tool.Name
+                        clone.Parent = LocalPlayer.Backpack
+                    end
+                end
+            end
+            -- أدوات من Character
+            if plr.Character then
+                for _, tool in pairs(plr.Character:GetChildren()) do
+                    if tool:IsA("Tool") then
+                        local clone = tool:Clone()
+                        clone.Name = "[🤚مسروق] " .. tool.Name
+                        clone.Parent = LocalPlayer.Backpack
+                    end
+                end
+            end
         end
     end
 end)
