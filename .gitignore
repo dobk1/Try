@@ -1,7 +1,7 @@
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- GUI
+-- واجهة GUI
 local gui = Instance.new("ScreenGui", game.CoreGui)
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 200, 0, 100)
@@ -14,7 +14,7 @@ frame.Draggable = true
 local button = Instance.new("TextButton", frame)
 button.Size = UDim2.new(1, -20, 0, 40)
 button.Position = UDim2.new(0, 10, 0, 30)
-button.Text = "🌀 شغّل Fling All"
+button.Text = "🧲 تشغيل الانتقال داخلهم"
 button.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
 button.TextColor3 = Color3.new(1, 1, 1)
 button.TextScaled = true
@@ -23,50 +23,31 @@ button.Font = Enum.Font.GothamBold
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 20)
 title.Position = UDim2.new(0, 0, 0, 5)
-title.Text = "DOBK Flinger V1"
+title.Text = "DOBK Auto Touch V1"
 title.TextColor3 = Color3.new(1, 0, 0.2)
 title.BackgroundTransparency = 1
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
 
--- Fling Function
-local function fling(target)
-	local char = LocalPlayer.Character
-	if not char then return end
-
-	local hrp = char:FindFirstChild("HumanoidRootPart")
-	local targetHRP = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
-
-	if hrp and targetHRP then
-		-- الانتقال يم اللاعب
-		hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
-
-		-- تطبيق القوة
-		local bv = Instance.new("BodyVelocity")
-		bv.Velocity = Vector3.new(9999, 9999, 9999)
-		bv.MaxForce = Vector3.new(1e9, 1e9, 1e9)
-		bv.P = 1e9
-		bv.Parent = hrp
-
-		game.Debris:AddItem(bv, 0.15)
-	end
-end
-
 -- عند الضغط على الزر
 button.MouseButton1Click:Connect(function()
 	spawn(function()
 		while true do
-			for _, plr in pairs(Players:GetPlayers()) do
-				if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-					pcall(function()
-						fling(plr)
-						wait(0.3)
-					end)
+			for _, target in pairs(Players:GetPlayers()) do
+				if target ~= LocalPlayer and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+					local myHRP = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+					local targetHRP = target.Character:FindFirstChild("HumanoidRootPart")
+
+					if myHRP and targetHRP then
+						myHRP.CFrame = targetHRP.CFrame -- يدخل داخله حرفياً
+						wait(1)
+					end
 				end
 			end
 			wait(1)
 		end
 	end)
-	button.Text = "✅ شغّال!"
+
+	button.Text = "✅ شغّال"
 	button.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
 end)
