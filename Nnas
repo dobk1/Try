@@ -6,8 +6,8 @@ local hrp = char:WaitForChild("HumanoidRootPart")
 -- واجهة GUI
 local gui = Instance.new("ScreenGui", game.CoreGui)
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 300, 0, 300)
-frame.Position = UDim2.new(0.5, -150, 0.5, -150)
+frame.Size = UDim2.new(0, 300, 0, 250)
+frame.Position = UDim2.new(0.5, -150, 0.5, -125)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
@@ -42,25 +42,15 @@ btnGather.TextColor3 = Color3.new(1, 1, 1)
 btnGather.TextScaled = true
 btnGather.Font = Enum.Font.GothamBold
 
--- زر سحب أدوات اللاعبين (وهمي)
-local btnGrabAllTools = Instance.new("TextButton", frame)
-btnGrabAllTools.Size = UDim2.new(1, -20, 0, 40)
-btnGrabAllTools.Position = UDim2.new(0, 10, 0, 140)
-btnGrabAllTools.Text = "🧤 اسحب أدوات اللاعبين (وهمي)"
-btnGrabAllTools.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
-btnGrabAllTools.TextColor3 = Color3.new(1, 1, 1)
-btnGrabAllTools.TextScaled = true
-btnGrabAllTools.Font = Enum.Font.GothamBold
-
--- زر سحب الكلبشات فعلياً
-local btnStealCuffs = Instance.new("TextButton", frame)
-btnStealCuffs.Size = UDim2.new(1, -20, 0, 40)
-btnStealCuffs.Position = UDim2.new(0, 10, 0, 190)
-btnStealCuffs.Text = "🔒 اسحب الكلبشات من اللاعبين"
-btnStealCuffs.BackgroundColor3 = Color3.fromRGB(80, 20, 140)
-btnStealCuffs.TextColor3 = Color3.new(1, 1, 1)
-btnStealCuffs.TextScaled = true
-btnStealCuffs.Font = Enum.Font.GothamBold
+-- زر سحب الأدوات (فعلي)
+local btnSteal = Instance.new("TextButton", frame)
+btnSteal.Size = UDim2.new(1, -20, 0, 40)
+btnSteal.Position = UDim2.new(0, 10, 0, 140)
+btnSteal.Text = "🧤 سحب أدوات (فعلي)"
+btnSteal.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+btnSteal.TextColor3 = Color3.new(1, 1, 1)
+btnSteal.TextScaled = true
+btnSteal.Font = Enum.Font.GothamBold
 
 -- تنفيذ الطيران
 btnFly.MouseButton1Click:Connect(function()
@@ -70,7 +60,7 @@ btnFly.MouseButton1Click:Connect(function()
     if hrp then hrp.Anchored = true end
 end)
 
--- تجميع اللاعبين فوقك
+-- تنفيذ التجميع
 btnGather.MouseButton1Click:Connect(function()
     local basePos = hrp.Position + Vector3.new(0, 5, 0)
     for _, plr in pairs(Players:GetPlayers()) do
@@ -80,55 +70,13 @@ btnGather.MouseButton1Click:Connect(function()
     end
 end)
 
--- سحب أدوات اللاعبين (وهمي فقط عندك)
-btnGrabAllTools.MouseButton1Click:Connect(function()
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer then
-            local backpack = plr:FindFirstChild("Backpack")
-            if backpack then
-                for _, tool in pairs(backpack:GetChildren()) do
-                    if tool:IsA("Tool") then
-                        local clone = tool:Clone()
-                        clone.Name = "[🎒مسروق] " .. tool.Name
-                        clone.Parent = LocalPlayer.Backpack
-                    end
-                end
-            end
-            if plr.Character then
-                for _, tool in pairs(plr.Character:GetChildren()) do
-                    if tool:IsA("Tool") then
-                        local clone = tool:Clone()
-                        clone.Name = "[🤚مسروق] " .. tool.Name
-                        clone.Parent = LocalPlayer.Backpack
-                    end
-                end
-            end
-        end
-    end
-end)
-
--- سحب الكلبشات فعلياً (Clone من اللاعبين)
-btnStealCuffs.MouseButton1Click:Connect(function()
-    local targetToolName = "Handcuffs" -- غيره إذا اسم الكلبشة مختلف
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer then
-            local backpack = plr:FindFirstChild("Backpack")
-            if backpack then
-                for _, tool in pairs(backpack:GetChildren()) do
-                    if tool:IsA("Tool") and tool.Name == targetToolName then
-                        local clone = tool:Clone()
-                        clone.Name = "[🔒كلبشة]" .. tool.Name
-                        clone.Parent = LocalPlayer.Backpack
-                    end
-                end
-            end
-            if plr.Character then
-                for _, tool in pairs(plr.Character:GetChildren()) do
-                    if tool:IsA("Tool") and tool.Name == targetToolName then
-                        local clone = tool:Clone()
-                        clone.Name = "[🔒كلبشة]" .. tool.Name
-                        clone.Parent = LocalPlayer.Backpack
-                    end
+-- تنفيذ سحب الأدوات (فعلي)
+btnSteal.MouseButton1Click:Connect(function()
+    for _, targetPlayer in ipairs(Players:GetPlayers()) do
+        if targetPlayer ~= LocalPlayer and targetPlayer:FindFirstChild("Backpack") then
+            for _, tool in ipairs(targetPlayer.Backpack:GetChildren()) do
+                if tool:IsA("Tool") then
+                    tool.Parent = LocalPlayer.Backpack
                 end
             end
         end
