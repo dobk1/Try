@@ -1,4 +1,3 @@
--- DOBK Sky Jail V3 ☁️💀🔒 - نقلك بعيد + تجميع لاعبين فوقك فعلياً
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -7,8 +6,8 @@ local hrp = char:WaitForChild("HumanoidRootPart")
 -- واجهة GUI
 local gui = Instance.new("ScreenGui", game.CoreGui)
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 300, 0, 200)
-frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+frame.Size = UDim2.new(0, 300, 0, 250)
+frame.Position = UDim2.new(0.5, -150, 0.5, -125)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
@@ -23,7 +22,7 @@ title.BackgroundTransparency = 1
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
 
--- زر نقلك للسماء فعلياً
+-- زر الطيران البعيد
 local btnFly = Instance.new("TextButton", frame)
 btnFly.Size = UDim2.new(1, -20, 0, 40)
 btnFly.Position = UDim2.new(0, 10, 0, 40)
@@ -33,7 +32,7 @@ btnFly.TextColor3 = Color3.new(1, 1, 1)
 btnFly.TextScaled = true
 btnFly.Font = Enum.Font.GothamBold
 
--- زر تجميع اللاعبين فوقك
+-- زر تجميع اللاعبين
 local btnGather = Instance.new("TextButton", frame)
 btnGather.Size = UDim2.new(1, -20, 0, 40)
 btnGather.Position = UDim2.new(0, 10, 0, 90)
@@ -43,7 +42,17 @@ btnGather.TextColor3 = Color3.new(1, 1, 1)
 btnGather.TextScaled = true
 btnGather.Font = Enum.Font.GothamBold
 
--- تنفيذ الطيران الحقيقي
+-- زر سحب كل الأدوات الوهمية
+local btnGrabAllTools = Instance.new("TextButton", frame)
+btnGrabAllTools.Size = UDim2.new(1, -20, 0, 40)
+btnGrabAllTools.Position = UDim2.new(0, 10, 0, 140)
+btnGrabAllTools.Text = "🧤 اسحب كل الأدوات بالماب (وهمي)"
+btnGrabAllTools.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+btnGrabAllTools.TextColor3 = Color3.new(1, 1, 1)
+btnGrabAllTools.TextScaled = true
+btnGrabAllTools.Font = Enum.Font.GothamBold
+
+-- تنفيذ الطيران
 btnFly.MouseButton1Click:Connect(function()
     local floatPos = Vector3.new(9999, 5000, 9999)
     LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(floatPos))
@@ -51,12 +60,23 @@ btnFly.MouseButton1Click:Connect(function()
     if hrp then hrp.Anchored = true end
 end)
 
--- تجميع كل اللاعبين فوقك
+-- تجميع اللاعبين
 btnGather.MouseButton1Click:Connect(function()
     local basePos = hrp.Position + Vector3.new(0, 5, 0)
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
             plr.Character.HumanoidRootPart.CFrame = CFrame.new(basePos + Vector3.new(math.random(-3,3), 0, math.random(-3,3)))
+        end
+    end
+end)
+
+-- تنفيذ سحب الأدوات (وهمي)
+btnGrabAllTools.MouseButton1Click:Connect(function()
+    for _, obj in pairs(game:GetDescendants()) do
+        if obj:IsA("Tool") then
+            local clone = obj:Clone()
+            clone.Name = "[💼 وهمي] " .. obj.Name
+            clone.Parent = LocalPlayer.Backpack
         end
     end
 end)
