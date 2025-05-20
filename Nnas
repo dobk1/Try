@@ -3,31 +3,79 @@ local LocalPlayer = Players.LocalPlayer
 local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 
--- واجهة GUI
+-- GUI الأساسي
 local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "DobkGui"
+
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 300, 0, 250)
-frame.Position = UDim2.new(0.5, -150, 0.5, -125)
+frame.Size = UDim2.new(0, 320, 0, 300)
+frame.Position = UDim2.new(0.5, -160, 0.5, -150)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
-frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
 
+-- عنوان
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 30)
 title.Text = "☁️ DOBK Sky Jail V3"
-title.TextColor3 = Color3.new(1, 0, 0.2)
-title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundColor3 = Color3.fromRGB(70, 70, 120)
+title.BorderSizePixel = 0
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
+
+-- زر الإغلاق "X"
+local closeButton = Instance.new("TextButton", frame)
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -30, 0, 0)
+closeButton.Text = "X"
+closeButton.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+closeButton.TextColor3 = Color3.new(1, 1, 1)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextScaled = true
+closeButton.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+-- زر الإخفاء "="
+local hideButton = Instance.new("TextButton", frame)
+hideButton.Size = UDim2.new(0, 30, 0, 30)
+hideButton.Position = UDim2.new(1, -65, 0, 0)
+hideButton.Text = "="
+hideButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+hideButton.TextColor3 = Color3.new(1, 1, 1)
+hideButton.Font = Enum.Font.GothamBold
+hideButton.TextScaled = true
+
+-- زر إظهار جديد
+local reopenButton = Instance.new("TextButton")
+reopenButton.Size = UDim2.new(0, 100, 0, 40)
+reopenButton.Position = UDim2.new(0, 10, 0, 10)
+reopenButton.Text = "فتح DOBK GUI"
+reopenButton.Visible = false
+reopenButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+reopenButton.TextColor3 = Color3.new(1, 1, 1)
+reopenButton.Font = Enum.Font.GothamBold
+reopenButton.TextScaled = true
+reopenButton.Parent = gui
+reopenButton.MouseButton1Click:Connect(function()
+    frame.Visible = true
+    reopenButton.Visible = false
+end)
+
+hideButton.MouseButton1Click:Connect(function()
+    frame.Visible = false
+    reopenButton.Visible = true
+end)
 
 -- زر الطيران
 local btnFly = Instance.new("TextButton", frame)
 btnFly.Size = UDim2.new(1, -20, 0, 40)
 btnFly.Position = UDim2.new(0, 10, 0, 40)
 btnFly.Text = "🚀 طيرني بعيد فعلياً"
-btnFly.BackgroundColor3 = Color3.fromRGB(60, 60, 140)
+btnFly.BackgroundColor3 = Color3.fromRGB(80, 140, 200)
 btnFly.TextColor3 = Color3.new(1, 1, 1)
 btnFly.TextScaled = true
 btnFly.Font = Enum.Font.GothamBold
@@ -37,22 +85,32 @@ local btnGather = Instance.new("TextButton", frame)
 btnGather.Size = UDim2.new(1, -20, 0, 40)
 btnGather.Position = UDim2.new(0, 10, 0, 90)
 btnGather.Text = "☁️ اجمع اللاعبين فوقي"
-btnGather.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+btnGather.BackgroundColor3 = Color3.fromRGB(200, 100, 100)
 btnGather.TextColor3 = Color3.new(1, 1, 1)
 btnGather.TextScaled = true
 btnGather.Font = Enum.Font.GothamBold
 
--- زر سحب الأدوات (فعلي)
+-- زر سحب الأدوات
 local btnSteal = Instance.new("TextButton", frame)
 btnSteal.Size = UDim2.new(1, -20, 0, 40)
 btnSteal.Position = UDim2.new(0, 10, 0, 140)
 btnSteal.Text = "🧤 سحب أدوات (فعلي)"
-btnSteal.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+btnSteal.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
 btnSteal.TextColor3 = Color3.new(1, 1, 1)
 btnSteal.TextScaled = true
 btnSteal.Font = Enum.Font.GothamBold
 
--- تنفيذ الطيران
+-- حقوق في الأسفل
+local credit = Instance.new("TextLabel", frame)
+credit.Size = UDim2.new(1, -10, 0, 25)
+credit.Position = UDim2.new(0, 5, 1, -30)
+credit.Text = "حقوق © DOBK 2025"
+credit.TextColor3 = Color3.fromRGB(200, 200, 200)
+credit.BackgroundTransparency = 1
+credit.TextScaled = true
+credit.Font = Enum.Font.Gotham
+
+-- وظائف الأزرار
 btnFly.MouseButton1Click:Connect(function()
     local floatPos = Vector3.new(9999, 5000, 9999)
     LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(floatPos))
@@ -60,7 +118,6 @@ btnFly.MouseButton1Click:Connect(function()
     if hrp then hrp.Anchored = true end
 end)
 
--- تنفيذ التجميع
 btnGather.MouseButton1Click:Connect(function()
     local basePos = hrp.Position + Vector3.new(0, 5, 0)
     for _, plr in pairs(Players:GetPlayers()) do
@@ -70,7 +127,6 @@ btnGather.MouseButton1Click:Connect(function()
     end
 end)
 
--- تنفيذ سحب الأدوات (فعلي)
 btnSteal.MouseButton1Click:Connect(function()
     for _, targetPlayer in ipairs(Players:GetPlayers()) do
         if targetPlayer ~= LocalPlayer and targetPlayer:FindFirstChild("Backpack") then
