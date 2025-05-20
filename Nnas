@@ -8,8 +8,8 @@ local gui = Instance.new("ScreenGui", game.CoreGui)
 gui.Name = "DobkGui"
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 320, 0, 300)
-frame.Position = UDim2.new(0.5, -160, 0.5, -150)
+frame.Size = UDim2.new(0, 320, 0, 340) -- زودنا الارتفاع شوي لاحتواء الزر الرابع
+frame.Position = UDim2.new(0.5, -160, 0.5, -170)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
 frame.BorderSizePixel = 0
@@ -100,7 +100,7 @@ btnSteal.TextColor3 = Color3.new(1, 1, 1)
 btnSteal.TextScaled = true
 btnSteal.Font = Enum.Font.GothamBold
 
--- زر السحب الوهمي وتجميد اللاعبين ببطن بعض
+-- زر السحب الوهمي بدون تجميد
 local btnFakeStack = Instance.new("TextButton", frame)
 btnFakeStack.Size = UDim2.new(1, -20, 0, 40)
 btnFakeStack.Position = UDim2.new(0, 10, 0, 190)
@@ -150,14 +150,14 @@ btnSteal.MouseButton1Click:Connect(function()
 end)
 
 btnFakeStack.MouseButton1Click:Connect(function()
-    local offset = hrp.CFrame.LookVector * 5
+    local offset = hrp.CFrame.LookVector * 5 -- قدام اللاعب 5 وحدات
     local targetPos = hrp.Position + offset
 
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
             local theirHRP = plr.Character.HumanoidRootPart
-            theirHRP.CFrame = CFrame.new(targetPos, hrp.Position)
-            theirHRP.Anchored = true
+            theirHRP.CFrame = CFrame.new(targetPos, hrp.Position) -- يواجهك
+            -- بدون تثبيت
         end
     end
 end)
