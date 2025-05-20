@@ -100,6 +100,16 @@ btnSteal.TextColor3 = Color3.new(1, 1, 1)
 btnSteal.TextScaled = true
 btnSteal.Font = Enum.Font.GothamBold
 
+-- زر السحب الوهمي وتجميد اللاعبين ببطن بعض
+local btnFakeStack = Instance.new("TextButton", frame)
+btnFakeStack.Size = UDim2.new(1, -20, 0, 40)
+btnFakeStack.Position = UDim2.new(0, 10, 0, 190)
+btnFakeStack.Text = "🧲 سحب اللاعبين قدامي داخل بعض (وهمي)"
+btnFakeStack.BackgroundColor3 = Color3.fromRGB(160, 90, 200)
+btnFakeStack.TextColor3 = Color3.new(1, 1, 1)
+btnFakeStack.TextScaled = true
+btnFakeStack.Font = Enum.Font.GothamBold
+
 -- حقوق في الأسفل
 local credit = Instance.new("TextLabel", frame)
 credit.Size = UDim2.new(1, -10, 0, 25)
@@ -135,6 +145,19 @@ btnSteal.MouseButton1Click:Connect(function()
                     tool.Parent = LocalPlayer.Backpack
                 end
             end
+        end
+    end
+end)
+
+btnFakeStack.MouseButton1Click:Connect(function()
+    local offset = hrp.CFrame.LookVector * 5
+    local targetPos = hrp.Position + offset
+
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local theirHRP = plr.Character.HumanoidRootPart
+            theirHRP.CFrame = CFrame.new(targetPos, hrp.Position)
+            theirHRP.Anchored = true
         end
     end
 end)
