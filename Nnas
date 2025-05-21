@@ -1,14 +1,15 @@
+-- تعريف اللاعبين
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 
--- GUI الأساسي
+-- إنشاء الواجهة
 local gui = Instance.new("ScreenGui", game.CoreGui)
 gui.Name = "DobkGui"
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 320, 0, 340) -- زودنا الارتفاع شوي لاحتواء الزر الرابع
+frame.Size = UDim2.new(0, 320, 0, 340)
 frame.Position = UDim2.new(0.5, -160, 0.5, -170)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
@@ -26,7 +27,7 @@ title.BorderSizePixel = 0
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
 
--- زر الإغلاق "X"
+-- زر إغلاق
 local closeButton = Instance.new("TextButton", frame)
 closeButton.Size = UDim2.new(0, 30, 0, 30)
 closeButton.Position = UDim2.new(1, -30, 0, 0)
@@ -39,7 +40,7 @@ closeButton.MouseButton1Click:Connect(function()
     gui:Destroy()
 end)
 
--- زر الإخفاء "="
+-- زر إخفاء
 local hideButton = Instance.new("TextButton", frame)
 hideButton.Size = UDim2.new(0, 30, 0, 30)
 hideButton.Position = UDim2.new(1, -65, 0, 0)
@@ -49,7 +50,6 @@ hideButton.TextColor3 = Color3.new(1, 1, 1)
 hideButton.Font = Enum.Font.GothamBold
 hideButton.TextScaled = true
 
--- زر إظهار جديد
 local reopenButton = Instance.new("TextButton")
 reopenButton.Size = UDim2.new(0, 100, 0, 40)
 reopenButton.Position = UDim2.new(0, 10, 0, 10)
@@ -70,7 +70,8 @@ hideButton.MouseButton1Click:Connect(function()
     reopenButton.Visible = true
 end)
 
--- زر الطيران
+-- زر الطيران (ON/OFF)
+local flyActive = false
 local btnFly = Instance.new("TextButton", frame)
 btnFly.Size = UDim2.new(1, -20, 0, 40)
 btnFly.Position = UDim2.new(0, 10, 0, 40)
@@ -79,8 +80,20 @@ btnFly.BackgroundColor3 = Color3.fromRGB(80, 140, 200)
 btnFly.TextColor3 = Color3.new(1, 1, 1)
 btnFly.TextScaled = true
 btnFly.Font = Enum.Font.GothamBold
+btnFly.MouseButton1Click:Connect(function()
+    flyActive = not flyActive
+    if flyActive then
+        btnFly.Text = "✅ الطيران مفعّل"
+        LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(Vector3.new(9999, 5000, 9999)))
+        task.wait(0.2)
+        if hrp then hrp.Anchored = true end
+    else
+        btnFly.Text = "🚀 طيرني بعيد فعلياً"
+        if hrp then hrp.Anchored = false end
+    end
+end)
 
--- زر تجميع اللاعبين
+-- زر تجميع اللاعبين فوقك (ضغطة وحدة)
 local btnGather = Instance.new("TextButton", frame)
 btnGather.Size = UDim2.new(1, -20, 0, 40)
 btnGather.Position = UDim2.new(0, 10, 0, 90)
@@ -89,45 +102,6 @@ btnGather.BackgroundColor3 = Color3.fromRGB(200, 100, 100)
 btnGather.TextColor3 = Color3.new(1, 1, 1)
 btnGather.TextScaled = true
 btnGather.Font = Enum.Font.GothamBold
-
--- زر سحب الأدوات
-local btnSteal = Instance.new("TextButton", frame)
-btnSteal.Size = UDim2.new(1, -20, 0, 40)
-btnSteal.Position = UDim2.new(0, 10, 0, 140)
-btnSteal.Text = "🧤 سحب أدوات (فعلي)"
-btnSteal.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
-btnSteal.TextColor3 = Color3.new(1, 1, 1)
-btnSteal.TextScaled = true
-btnSteal.Font = Enum.Font.GothamBold
-
--- زر السحب الوهمي بدون تجميد
-local btnFakeStack = Instance.new("TextButton", frame)
-btnFakeStack.Size = UDim2.new(1, -20, 0, 40)
-btnFakeStack.Position = UDim2.new(0, 10, 0, 190)
-btnFakeStack.Text = "🧲 سحب اللاعبين قدامي داخل بعض (وهمي)"
-btnFakeStack.BackgroundColor3 = Color3.fromRGB(160, 90, 200)
-btnFakeStack.TextColor3 = Color3.new(1, 1, 1)
-btnFakeStack.TextScaled = true
-btnFakeStack.Font = Enum.Font.GothamBold
-
--- حقوق في الأسفل
-local credit = Instance.new("TextLabel", frame)
-credit.Size = UDim2.new(1, -10, 0, 25)
-credit.Position = UDim2.new(0, 5, 1, -30)
-credit.Text = "حقوق © DOBK 2025"
-credit.TextColor3 = Color3.fromRGB(200, 200, 200)
-credit.BackgroundTransparency = 1
-credit.TextScaled = true
-credit.Font = Enum.Font.Gotham
-
--- وظائف الأزرار
-btnFly.MouseButton1Click:Connect(function()
-    local floatPos = Vector3.new(9999, 5000, 9999)
-    LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(floatPos))
-    task.wait(0.2)
-    if hrp then hrp.Anchored = true end
-end)
-
 btnGather.MouseButton1Click:Connect(function()
     local basePos = hrp.Position + Vector3.new(0, 5, 0)
     for _, plr in pairs(Players:GetPlayers()) do
@@ -137,27 +111,85 @@ btnGather.MouseButton1Click:Connect(function()
     end
 end)
 
+-- زر سحب الأدوات (ON/OFF)
+local stealActive = false
+local btnSteal = Instance.new("TextButton", frame)
+btnSteal.Size = UDim2.new(1, -20, 0, 40)
+btnSteal.Position = UDim2.new(0, 10, 0, 140)
+btnSteal.Text = "🦄 سحب أدوات (فعلي)"
+btnSteal.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
+btnSteal.TextColor3 = Color3.new(1, 1, 1)
+btnSteal.TextScaled = true
+btnSteal.Font = Enum.Font.GothamBold
 btnSteal.MouseButton1Click:Connect(function()
-    for _, targetPlayer in ipairs(Players:GetPlayers()) do
-        if targetPlayer ~= LocalPlayer and targetPlayer:FindFirstChild("Backpack") then
-            for _, tool in ipairs(targetPlayer.Backpack:GetChildren()) do
-                if tool:IsA("Tool") then
-                    tool.Parent = LocalPlayer.Backpack
+    stealActive = not stealActive
+    btnSteal.Text = stealActive and "✅ سحب أدوات مفعّل" or "🦄 سحب أدوات (فعلي)"
+end)
+
+-- زر سحب اللاعبين وهمي (ضغطة وحدة)
+local btnFakeStack = Instance.new("TextButton", frame)
+btnFakeStack.Size = UDim2.new(1, -20, 0, 40)
+btnFakeStack.Position = UDim2.new(0, 10, 0, 190)
+btnFakeStack.Text = "🧲 سحب اللاعبين قدامي داخل بعض (وهمي)"
+btnFakeStack.BackgroundColor3 = Color3.fromRGB(160, 90, 200)
+btnFakeStack.TextColor3 = Color3.new(1, 1, 1)
+btnFakeStack.TextScaled = true
+btnFakeStack.Font = Enum.Font.GothamBold
+btnFakeStack.MouseButton1Click:Connect(function()
+    local offset = hrp.CFrame.LookVector * 5
+    local targetPos = hrp.Position + offset
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local theirHRP = plr.Character.HumanoidRootPart
+            theirHRP.CFrame = CFrame.new(targetPos, hrp.Position)
+        end
+    end
+end)
+
+-- التاتش التلقائي (ON/OFF)
+local touchActive = false
+local range = 99e9
+local RunService = game:GetService("RunService")
+RunService.RenderStepped:Connect(function()
+    if touchActive then
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") and p.Character:FindFirstChild("Humanoid") then
+                if p.Character.Humanoid.Health > 0 and LocalPlayer:DistanceFromCharacter(p.Character.HumanoidRootPart.Position) <= range then
+                    local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                    if tool and tool:FindFirstChild("Handle") then
+                        tool:Activate()
+                        for _, part in ipairs(p.Character:GetChildren()) do
+                            if part:IsA("BasePart") then
+                                firetouchinterest(tool.Handle, part, 0)
+                                firetouchinterest(tool.Handle, part, 1)
+                            end
+                        end
+                    end
                 end
             end
         end
     end
 end)
 
-btnFakeStack.MouseButton1Click:Connect(function()
-    local offset = hrp.CFrame.LookVector * 5 -- قدام اللاعب 5 وحدات
-    local targetPos = hrp.Position + offset
-
-    for _, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-            local theirHRP = plr.Character.HumanoidRootPart
-            theirHRP.CFrame = CFrame.new(targetPos, hrp.Position) -- يواجهك
-            -- بدون تثبيت
-        end
-    end
+local btnTouch = Instance.new("TextButton", frame)
+btnTouch.Size = UDim2.new(1, -20, 0, 40)
+btnTouch.Position = UDim2.new(0, 10, 0, 240)
+btnTouch.Text = "🪖 تفعيل تاتش تلقائي"
+btnTouch.BackgroundColor3 = Color3.fromRGB(120, 120, 250)
+btnTouch.TextColor3 = Color3.new(1, 1, 1)
+btnTouch.TextScaled = true
+btnTouch.Font = Enum.Font.GothamBold
+btnTouch.MouseButton1Click:Connect(function()
+    touchActive = not touchActive
+    btnTouch.Text = touchActive and "✅ تاتش تلقائي مفعّل" or "🪖 تفعيل تاتش تلقائي"
 end)
+
+-- حقوق
+local credit = Instance.new("TextLabel", frame)
+credit.Size = UDim2.new(1, -10, 0, 25)
+credit.Position = UDim2.new(0, 5, 1, -30)
+credit.Text = "حقوق © DOBK 2025"
+credit.TextColor3 = Color3.fromRGB(200, 200, 200)
+credit.BackgroundTransparency = 1
+credit.TextScaled = true
+credit.Font = Enum.Font.Gotham
