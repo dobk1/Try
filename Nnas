@@ -111,19 +111,30 @@ btnGather.MouseButton1Click:Connect(function()
     end
 end)
 
--- زر سحب الأدوات (ON/OFF)
-local stealActive = false
+-- زر سحب الأدوات (ضغطة وحدة فقط)
 local btnSteal = Instance.new("TextButton", frame)
 btnSteal.Size = UDim2.new(1, -20, 0, 40)
 btnSteal.Position = UDim2.new(0, 10, 0, 140)
-btnSteal.Text = "🦄 سحب أدوات (فعلي)"
+btnSteal.Text = "🦄 سحب أدوات (ضغطة وحدة)"
 btnSteal.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
 btnSteal.TextColor3 = Color3.new(1, 1, 1)
 btnSteal.TextScaled = true
 btnSteal.Font = Enum.Font.GothamBold
 btnSteal.MouseButton1Click:Connect(function()
-    stealActive = not stealActive
-    btnSteal.Text = stealActive and "✅ سحب أدوات مفعّل" or "🦄 سحب أدوات (فعلي)"
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            for _, item in pairs(plr.Backpack:GetChildren()) do
+                if item:IsA("Tool") then
+                    item.Parent = LocalPlayer.Backpack
+                end
+            end
+            for _, item in pairs(plr.Character:GetChildren()) do
+                if item:IsA("Tool") then
+                    item.Parent = LocalPlayer.Backpack
+                end
+            end
+        end
+    end
 end)
 
 -- زر سحب اللاعبين وهمي (ضغطة وحدة)
