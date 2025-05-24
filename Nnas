@@ -195,6 +195,48 @@ btnTouch.MouseButton1Click:Connect(function()
     btnTouch.Text = touchActive and "✅ تاتش تلقائي مفعّل" or "🪖 تفعيل تاتش تلقائي"
 end)
 
+-- زر كلبشة جماعية
+local btnCuffAll = Instance.new("TextButton", frame)
+btnCuffAll.Size = UDim2.new(1, -20, 0, 40)
+btnCuffAll.Position = UDim2.new(0, 10, 0, 290)
+btnCuffAll.Text = "🔗 كلبشة جماعية"
+btnCuffAll.BackgroundColor3 = Color3.fromRGB(180, 100, 50)
+btnCuffAll.TextColor3 = Color3.new(1, 1, 1)
+btnCuffAll.TextScaled = true
+btnCuffAll.Font = Enum.Font.GothamBold
+
+btnCuffAll.MouseButton1Click:Connect(function()
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local Remote = char:WaitForChild("Handcuffs"):WaitForChild("RemoteEvent")
+
+    local function cuffPlayer(player)
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("RightUpperArm") then
+            local args = {
+                [1] = "Cuff",
+                [2] = player.Character.RightUpperArm
+            }
+            Remote:FireServer(unpack(args))
+            wait(1)
+        end
+    end
+
+    local function uncuff()
+        local args = {
+            [1] = "UnCuff"
+        }
+        Remote:FireServer(unpack(args))
+    end
+
+    for _, player in pairs(Players:GetPlayers()) do
+        cuffPlayer(player)
+    end
+
+    wait(1)
+    uncuff()
+end)
+
 -- حقوق
 local credit = Instance.new("TextLabel", frame)
 credit.Size = UDim2.new(1, -10, 0, 25)
@@ -203,4 +245,4 @@ credit.Text = "حقوق © DOBK 2025"
 credit.TextColor3 = Color3.fromRGB(200, 200, 200)
 credit.BackgroundTransparency = 1
 credit.TextScaled = true
-credit.Font = Enum.Font.Gotham
+credit.Font = Enum.Font.GothamBold
