@@ -186,63 +186,72 @@ local btnTouch = Instance.new("TextButton", frame)
 btnTouch.Size = UDim2.new(1, -20, 0, 40)
 btnTouch.Position = UDim2.new(0, 10, 0, 240)
 btnTouch.Text = "🪖 تفعيل تاتش تلقائي"
-btnTouch.BackgroundColor3 = Color3.fromRGB(120, 120, 250)
+btnTouch.BackgroundColor3 = Color3.fromRGB(120, 180, 130)
 btnTouch.TextColor3 = Color3.new(1, 1, 1)
 btnTouch.TextScaled = true
 btnTouch.Font = Enum.Font.GothamBold
 btnTouch.MouseButton1Click:Connect(function()
     touchActive = not touchActive
-    btnTouch.Text = touchActive and "✅ تاتش تلقائي مفعّل" or "🪖 تفعيل تاتش تلقائي"
+    btnTouch.Text = touchActive and "✅ تم تفعيل التاتش التلقائي" or "🪖 تفعيل تاتش تلقائي"
 end)
 
--- زر كلبشة جماعية
+-- زر كلبشة جماعية (التنفيذ عبر RemoteEvent)
 local btnCuffAll = Instance.new("TextButton", frame)
 btnCuffAll.Size = UDim2.new(1, -20, 0, 40)
 btnCuffAll.Position = UDim2.new(0, 10, 0, 290)
 btnCuffAll.Text = "🔗 كلبشة جماعية"
-btnCuffAll.BackgroundColor3 = Color3.fromRGB(180, 100, 50)
+btnCuffAll.BackgroundColor3 = Color3.fromRGB(200, 150, 50)
 btnCuffAll.TextColor3 = Color3.new(1, 1, 1)
 btnCuffAll.TextScaled = true
 btnCuffAll.Font = Enum.Font.GothamBold
 
 btnCuffAll.MouseButton1Click:Connect(function()
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
-    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-    local Remote = char:WaitForChild("Handcuffs"):WaitForChild("RemoteEvent")
+    -- إيجاد أداة HandCuffs داخل الشخصية
+    local handcuffs = char:FindFirstChild("HandCuffs")
+    if not handcuffs then
+        warn("❌ لم يتم العثور على أداة HandCuffs داخل شخصيتك.")
+        return
+    end
 
+    local remote = handcuffs:FindFirstChildOfClass("RemoteEvent")
+    if not remote then
+        warn("❌ لم يتم العثور على RemoteEvent داخل HandCuffs.")
+        return
+    end
+
+    btnCuffAll.Text = "⏳ جاري كلبشة اللاعبين..."
+    btnCuffAll.Active = false
+    btnCuffAll.AutoButtonColor = false
+
+    -- وظيفة كلبشة لاعب
     local function cuffPlayer(player)
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("RightUpperArm") then
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("LeftUpperArm") then
             local args = {
                 [1] = "Cuff",
-                [2] = player.Character.RightUpperArm
+                [2] = player.Character.LeftUpperArm
             }
-            Remote:FireServer(unpack(args))
-            wait(1)
+            remote:FireServer(unpack(args))
         end
     end
 
+    -- وظيفة فك الكلبشة
     local function uncuff()
         local args = {
             [1] = "UnCuff"
         }
-        Remote:FireServer(unpack(args))
+        remote:FireServer(unpack(args))
     end
 
-    for _, player in pairs(Players:GetPlayers()) do
-        cuffPlayer(player)
-    end
-
-    wait(1)
-    uncuff()
+    -- تكرار تكليبش كل اللاعبين بحلقة متواصلة (ممكن توقف السكربت لو تريد بالضغط على إعادة تشغيل اللعبة)
+    spawn(function()
+        while true do
+            for _, player in ipairs(Players:GetPlayers()) do
+                cuffPlayer(player)
+                wait(0.5)
+            end
+            wait(1)
+            uncuff()
+            wait(1)
+        end
+    end)
 end)
-
--- حقوق
-local credit = Instance.new("TextLabel", frame)
-credit.Size = UDim2.new(1, -10, 0, 25)
-credit.Position = UDim2.new(0, 5, 1, -30)
-credit.Text = "حقوق © DOBK 2025"
-credit.TextColor3 = Color3.fromRGB(200, 200, 200)
-credit.BackgroundTransparency = 1
-credit.TextScaled = true
-credit.Font = Enum.Font.GothamBold
