@@ -249,9 +249,9 @@ btnCuffAll.MouseButton1Click:Connect(function()
                 cuffPlayer(player)
                 wait(0.5)
             end
-            wait(1)
+            wait(0.2)
             uncuff()
-            wait(1)
+            wait(0.2)
         end
     end)
 end)
