@@ -1,1 +1,38 @@
-،،
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local remote = char:WaitForChild("HandCuffs"):WaitForChild("RemoteEvent1")
+
+local function cuffPlayer(targetPlayer)
+    if targetPlayer.Character and targetPlayer.Character:FindFirstChild("UpperTorso") then
+        local args = {
+            [1] = "Cuff",
+            [2] = targetPlayer.Character.UpperTorso
+        }
+        remote:FireServer(unpack(args))
+    end
+end
+
+local function cuffAllPlayers()
+    for _, player in pairs(Players:GetPlayers()) do
+        pcall(function()
+            cuffPlayer(player)
+            wait(0.2) -- تأخير بسيط بين كل طلب
+        end)
+    end
+end
+
+-- مثال زر تشغيل
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+local button = Instance.new("TextButton", ScreenGui)
+button.Size = UDim2.new(0, 200, 0, 50)
+button.Position = UDim2.new(0.5, -100, 0.5, -25)
+button.Text = "كلبش كل اللاعبين"
+button.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+button.TextColor3 = Color3.new(1,1,1)
+button.Font = Enum.Font.GothamBold
+button.TextScaled = true
+
+button.MouseButton1Click:Connect(function()
+    cuffAllPlayers()
+end)
