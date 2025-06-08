@@ -1,7 +1,8 @@
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local remote = char:WaitForChild("HandCuffs"):WaitForChild("RemoteEvent1")
+
+-- الريموت الجديد من ReplicatedStorage
+local remote = game:GetService("ReplicatedStorage").ChatRe.r3.Re.aqhrwilfaxguity
 
 local function cuffPlayer(targetPlayer)
     if targetPlayer.Character and targetPlayer.Character:FindFirstChild("UpperTorso") then
@@ -15,10 +16,12 @@ end
 
 local function cuffAllPlayers()
     for _, player in pairs(Players:GetPlayers()) do
-        pcall(function()
-            cuffPlayer(player)
-            wait(0.1) -- تأخير بسيط بين كل طلب
-        end)
+        if player ~= LocalPlayer then
+            pcall(function()
+                cuffPlayer(player)
+                wait(0.1) -- تأخير بسيط بين كل طلب
+            end)
+        end
     end
 end
 
