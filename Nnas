@@ -17,7 +17,7 @@ local function cuffAllPlayers()
     for _, player in pairs(Players:GetPlayers()) do
         pcall(function()
             cuffPlayer(player)
-            wait(0.2) -- تأخير بسيط بين كل طلب
+            wait(0.1) -- تأخير بسيط بين كل طلب
         end)
     end
 end
