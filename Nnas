@@ -1,41 +1,60 @@
+-- سكربت GUI مع زر "Cuff All" - مضمون يعمل على KRNL
+
+-- التأكد من البيئة
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local localPlayer = Players.LocalPlayer
+local remote = ReplicatedStorage:WaitForChild("ChatRe"):WaitForChild("r3"):WaitForChild("Re"):WaitForChild("aqhrwilfaxguity")
+local cuffPart = workspace:WaitForChild("streets"):WaitForChild("Part")
 
--- الريموت الجديد من ReplicatedStorage
-local remote = game:GetService("ReplicatedStorage").ChatRe.r3.Re.aqhrwilfaxguity
+-- إنشاء الـ ScreenGui داخل الـ PlayerGui بدلاً من CoreGui (أضمن في بعض الإكزكيوترز)
+local gui = Instance.new("ScreenGui")
+gui.Name = "CuffGui"
+gui.ResetOnSpawn = false
+gui.Parent = localPlayer:WaitForChild("PlayerGui") -- بدل CoreGui
 
-local function cuffPlayer(targetPlayer)
-    if targetPlayer.Character and targetPlayer.Character:FindFirstChild("UpperTorso") then
-        local args = {
-            [1] = "Cuff",
-            [2] = targetPlayer.Character.UpperTorso
-        }
-        remote:FireServer(unpack(args))
-    end
-end
+-- إنشاء الإطار (Frame)
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 100)
+frame.Position = UDim2.new(0.5, -100, 0.5, -50)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
 
-local function cuffAllPlayers()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer then
-            pcall(function()
-                cuffPlayer(player)
-                wait(0.1) -- تأخير بسيط بين كل طلب
-            end)
-        end
-    end
-end
+-- إنشاء الزر (Button)
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(1, 0, 1, 0)
+button.Text = "Cuff All"
+button.TextColor3 = Color3.new(1, 1, 1)
+button.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+button.Font = Enum.Font.SourceSansBold
+button.TextSize = 24
+button.Parent = frame
 
--- مثال زر تشغيل
-local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
-local button = Instance.new("TextButton", ScreenGui)
-button.Size = UDim2.new(0, 200, 0, 50)
-button.Position = UDim2.new(0.5, -100, 0.5, -25)
-button.Text = "كلبش كل اللاعبين"
-button.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-button.TextColor3 = Color3.new(1,1,1)
-button.Font = Enum.Font.GothamBold
-button.TextScaled = true
+-- منطق التشغيل
+local running = false
 
 button.MouseButton1Click:Connect(function()
-    cuffAllPlayers()
+    running = not running
+    if running then
+        button.Text = "Stop Cuff"
+        spawn(function()
+            while running do
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player ~= localPlayer then
+                        local args = {
+                            [1] = "Cuff",
+                            [2] = cuffPart
+                        }
+                        remote:FireServer(unpack(args))
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)
+    else
+        button.Text = "Cuff All"
+    end
 end)
