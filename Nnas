@@ -1,48 +1,63 @@
--- تعريف الخدمات
+-- الخدمات
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 local remote = ReplicatedStorage:WaitForChild("ChatRe"):WaitForChild("r3"):WaitForChild("Re"):WaitForChild("aqhrwilfaxguity")
 local cuffPart = workspace:WaitForChild("streets"):WaitForChild("Part")
 
--- إنشاء الواجهة
+-- GUI
 local gui = Instance.new("ScreenGui", game.CoreGui)
 gui.Name = "DobkGui"
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 320, 0, 120)
-frame.Position = UDim2.new(0.5, -160, 0.5, -60)
+frame.Size = UDim2.new(0, 320, 0, 140)
+frame.Position = UDim2.new(0.5, -160, 0.5, -70)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
 
--- عنوان
+-- العنوان
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "☁️ DOBK Cuff GUI"
+title.Text = "☁️ DOBK Sky Jail V3"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.BackgroundColor3 = Color3.fromRGB(70, 70, 120)
 title.BorderSizePixel = 0
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
 
--- زر كلبشة الجميع
-local button = Instance.new("TextButton", frame)
-button.Size = UDim2.new(1, -20, 0, 60)
-button.Position = UDim2.new(0, 10, 0, 40)
-button.Text = "🔗 Cuff All"
-button.TextColor3 = Color3.new(1, 1, 1)
-button.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-button.Font = Enum.Font.GothamBold
-button.TextScaled = true
+-- زر إغلاق
+local closeButton = Instance.new("TextButton", frame)
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -30, 0, 0)
+closeButton.Text = "X"
+closeButton.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+closeButton.TextColor3 = Color3.new(1, 1, 1)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextScaled = true
+closeButton.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
 
+-- زر كلبشة جماعية
+local cuffButton = Instance.new("TextButton", frame)
+cuffButton.Size = UDim2.new(1, -20, 0, 60)
+cuffButton.Position = UDim2.new(0, 10, 0, 50)
+cuffButton.Text = "🔗 كلبشة جماعية"
+cuffButton.TextColor3 = Color3.new(1, 1, 1)
+cuffButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+cuffButton.Font = Enum.Font.GothamBold
+cuffButton.TextScaled = true
+cuffButton.Parent = frame
+
+-- تنفيذ الكلبشة
 local running = false
-button.MouseButton1Click:Connect(function()
+cuffButton.MouseButton1Click:Connect(function()
     running = not running
     if running then
-        button.Text = "⏳ Stop Cuff"
+        cuffButton.Text = "⏳ إيقاف الكلبشة"
         spawn(function()
             while running do
                 for _, player in pairs(Players:GetPlayers()) do
@@ -58,6 +73,6 @@ button.MouseButton1Click:Connect(function()
             end
         end)
     else
-        button.Text = "🔗 Cuff All"
+        cuffButton.Text = "🔗 كلبشة جماعية"
     end
 end)
