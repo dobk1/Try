@@ -1,102 +1,108 @@
--- الانتظار حتى يتم تحميل اللعبة بالكامل
-repeat task.wait() until game:IsLoaded()
-
--- الخدمات الأساسية
+-- تعريف اللاعبين
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
+local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
 
--- الانتظار حتى يتم تحميل PlayerGui
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui", 10)
-if not PlayerGui then
-    warn("فشل تحميل PlayerGui")
-    return
-end
+-- إنشاء الواجهة
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "DobkGui"
 
--- محاولة الحصول على cuffPart
-local cuffPart
-local success1, err1 = pcall(function()
-    cuffPart = Workspace:WaitForChild("town")
-        :FindFirstChild("شرطي عسكري 2")
-        :FindFirstChild("شرطي عسكري ثابت 2")
-        :FindFirstChild("Meshes/مجسم كلبشة جاهز3ب5_Cube.011 (1)")
-end)
-
-if not success1 or not cuffPart then
-    warn("لم يتم العثور على cuffPart الجديد:", err1)
-    return
-end
-
--- محاولة الحصول على الريموت الجديد
-local remote
-local success2, err2 = pcall(function()
-    remote = ReplicatedStorage:WaitForChild("ChatRe")
-        :WaitForChild("r3")
-        :WaitForChild("Re")
-        :WaitForChild("pkajaofqerqjn")
-end)
-
-if not success2 or not remote then
-    warn("لم يتم العثور على الريموت الجديد:", err2)
-    return
-end
-
--- إنشاء واجهة المستخدم
-local gui = Instance.new("ScreenGui")
-gui.Name = "CuffGui"
-gui.ResetOnSpawn = false
-gui.Enabled = true
-gui.Parent = PlayerGui
-print("تم إنشاء الـ GUI بنجاح")
-
--- إطار
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 200, 0, 100)
-frame.Position = UDim2.new(0.5, -100, 0.5, -50)
-frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 320, 0, 380)
+frame.Position = UDim2.new(0.5, -160, 0.5, -190)
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
-frame.Parent = gui
 
--- زر
-local button = Instance.new("TextButton")
-button.Size = UDim2.new(1, -10, 1, -10)
-button.Position = UDim2.new(0, 5, 0, 5)
-button.Text = "Cuff All"
-button.TextColor3 = Color3.new(1, 1, 1)
-button.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-button.Font = Enum.Font.SourceSansBold
-button.TextSize = 24
-button.Parent = frame
+-- عنوان
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Text = "☁️ DOBK Sky Jail V3"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundColor3 = Color3.fromRGB(70, 70, 120)
+title.BorderSizePixel = 0
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
 
--- تشغيل الكلبشة
-local running = false
+-- زر إغلاق
+local closeButton = Instance.new("TextButton", frame)
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -30, 0, 0)
+closeButton.Text = "X"
+closeButton.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+closeButton.TextColor3 = Color3.new(1, 1, 1)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextScaled = true
+closeButton.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
 
-button.MouseButton1Click:Connect(function()
-    running = not running
-    button.Text = running and "Stop Cuff" or "Cuff All"
+-- زر إخفاء
+local hideButton = Instance.new("TextButton", frame)
+hideButton.Size = UDim2.new(0, 30, 0, 30)
+hideButton.Position = UDim2.new(1, -65, 0, 0)
+hideButton.Text = "="
+hideButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+hideButton.TextColor3 = Color3.new(1, 1, 1)
+hideButton.Font = Enum.Font.GothamBold
+hideButton.TextScaled = true
 
-    if running then
-        task.spawn(function()
-            while running do
-                for _, player in pairs(Players:GetPlayers()) do
-                    if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                        local args = {
-                            [1] = "Cuff",
-                            [2] = cuffPart
-                        }
-                        local success, err = pcall(function()
-                            remote:FireServer(unpack(args))
-                        end)
-                        if not success then
-                            warn("فشل إطلاق الريموت: " .. tostring(err))
-                        end
-                    end
+local reopenButton = Instance.new("TextButton")
+reopenButton.Size = UDim2.new(0, 100, 0, 40)
+reopenButton.Position = UDim2.new(0, 10, 0, 10)
+reopenButton.Text = "فتح DOBK GUI"
+reopenButton.Visible = false
+reopenButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+reopenButton.TextColor3 = Color3.new(1, 1, 1)
+reopenButton.Font = Enum.Font.GothamBold
+reopenButton.TextScaled = true
+reopenButton.Parent = gui
+reopenButton.MouseButton1Click:Connect(function()
+    frame.Visible = true
+    reopenButton.Visible = false
+end)
+
+hideButton.MouseButton1Click:Connect(function()
+    frame.Visible = false
+    reopenButton.Visible = true
+end)
+
+-- زر الطيران
+-- (محتوى زر الطيران + الأزرار الأخرى مثل: اجمع اللاعبين، سحب أدوات، تاتش، كلبشة جماعية ... كما في سكربتك السابق)
+
+-- زر الكلبشة عبر Remote خاص
+local btnRemoteCuff = Instance.new("TextButton", frame)
+btnRemoteCuff.Size = UDim2.new(1, -20, 0, 40)
+btnRemoteCuff.Position = UDim2.new(0, 10, 0, 340)
+btnRemoteCuff.Text = "🛰️ كلبشة عبر Remote خاص"
+btnRemoteCuff.BackgroundColor3 = Color3.fromRGB(100, 100, 200)
+btnRemoteCuff.TextColor3 = Color3.new(1, 1, 1)
+btnRemoteCuff.TextScaled = true
+btnRemoteCuff.Font = Enum.Font.GothamBold
+btnRemoteCuff.Parent = frame
+
+btnRemoteCuff.MouseButton1Click:Connect(function()
+    local success, err = pcall(function()
+        local targetPart = workspace.town:FindFirstChild("ﺔﺴﺳﺃ ﺮﻴﻴﺴﺘﻟﺍ 2")
+        if targetPart then
+            local subPart = targetPart:FindFirstChild("ﺔﺴﺳﺃ ﺮﻴﻴﺴﺘﻟﺍ 2")
+            if subPart then
+                local meshPart = subPart:FindFirstChild("Meshes/ﺕﺎﻴﻨﺒﻟﺍ ﺭﺎﻴﺳ ٣٥_Cube.011 (1)")
+                if meshPart then
+                    local args = {
+                        [1] = "Cuff",
+                        [2] = meshPart
+                    }
+                    game:GetService("ReplicatedStorage").ChatRe.r3.Re.pkajaofqerqjn:FireServer(unpack(args))
                 end
-                task.wait(0.1)
             end
-        end)
+        end
+    end)
+
+    if not success then
+        warn("❌ فشل في إرسال الريموت: " .. tostring(err))
     end
 end)
