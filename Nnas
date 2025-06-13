@@ -8,44 +8,49 @@ local Workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
 
 -- الانتظار حتى يتم تحميل PlayerGui
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui", 10) -- مهلة 10 ثوانٍ
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui", 10)
 if not PlayerGui then
     warn("فشل تحميل PlayerGui")
     return
 end
 
--- البحث عن الكائنات المطلوبة مع التحقق من وجودها
-local success, cuffPart = pcall(function()
-    return Workspace:WaitForChild("streets"):WaitForChild("Part")
+-- محاولة الحصول على cuffPart
+local cuffPart
+local success1, err1 = pcall(function()
+    cuffPart = Workspace:WaitForChild("town")
+        :FindFirstChild("شرطي عسكري 2")
+        :FindFirstChild("شرطي عسكري ثابت 2")
+        :FindFirstChild("Meshes/مجسم كلبشة جاهز3ب5_Cube.011 (1)")
 end)
-if not success or not cuffPart then
-    warn("لم يتم العثور على cuffPart في Workspace.streets.Part")
+
+if not success1 or not cuffPart then
+    warn("لم يتم العثور على cuffPart الجديد:", err1)
     return
 end
 
-local success, remote = pcall(function()
-    return ReplicatedStorage:WaitForChild("ChatRe"):WaitForChild("r3"):WaitForChild("Re"):WaitForChild("aqhrwilfaxguity")
+-- محاولة الحصول على الريموت الجديد
+local remote
+local success2, err2 = pcall(function()
+    remote = ReplicatedStorage:WaitForChild("ChatRe")
+        :WaitForChild("r3")
+        :WaitForChild("Re")
+        :WaitForChild("pkajaofqerqjn")
 end)
-if not success or not remote then
-    warn("لم يتم العثور على الريموت في المسار المحدد")
-    -- طباعة جميع الريموتات للتحقق (اختياري)
-    for _, obj in pairs(ReplicatedStorage:GetDescendants()) do
-        if obj:IsA("RemoteEvent") then
-            print("ريموت موجود: " .. obj:GetFullName())
-        end
-    end
+
+if not success2 or not remote then
+    warn("لم يتم العثور على الريموت الجديد:", err2)
     return
 end
 
--- إنشاء واجهة المستخدم الرسومية (ScreenGui)
+-- إنشاء واجهة المستخدم
 local gui = Instance.new("ScreenGui")
 gui.Name = "CuffGui"
 gui.ResetOnSpawn = false
-gui.Enabled = true -- التأكد من تفعيل الواجهة
+gui.Enabled = true
 gui.Parent = PlayerGui
 print("تم إنشاء الـ GUI بنجاح")
 
--- إنشاء الإطار (Frame)
+-- إطار
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 200, 0, 100)
 frame.Position = UDim2.new(0.5, -100, 0.5, -50)
@@ -55,10 +60,10 @@ frame.Active = true
 frame.Draggable = true
 frame.Parent = gui
 
--- إنشاء زر الكلبشة (TextButton)
+-- زر
 local button = Instance.new("TextButton")
-button.Size = UDim2.new(1, -10, 1, -10) -- تصغير الزر قليلاً ليبدو أنيقًا
-button.Position = UDim2.new(0, 5, 0, 5) -- توسيط الزر داخل الإطار
+button.Size = UDim2.new(1, -10, 1, -10)
+button.Position = UDim2.new(0, 5, 0, 5)
 button.Text = "Cuff All"
 button.TextColor3 = Color3.new(1, 1, 1)
 button.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
@@ -66,10 +71,9 @@ button.Font = Enum.Font.SourceSansBold
 button.TextSize = 24
 button.Parent = frame
 
--- متغير لتتبع حالة الكلبشة
+-- تشغيل الكلبشة
 local running = false
 
--- وظيفة تفعيل/إيقاف الكلبشة
 button.MouseButton1Click:Connect(function()
     running = not running
     button.Text = running and "Stop Cuff" or "Cuff All"
@@ -91,7 +95,7 @@ button.MouseButton1Click:Connect(function()
                         end
                     end
                 end
-                task.wait(0.1) -- تأخير صغير لتجنب الحمل الزائد
+                task.wait(0.1)
             end
         end)
     end
